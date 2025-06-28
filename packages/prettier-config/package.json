@@ -1,0 +1,13 @@
+{
+  "name": "@uplox/prettier-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": "./base.js",
+    "./base": "./base.js"
+  }
+}

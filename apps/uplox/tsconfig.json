@@ -1,0 +1,21 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "skipLibCheck": true,
+        "types": ["node"],
+        "jsx": "react-jsx",
+        "jsxImportSource": "hono/jsx",
+        "outDir": "./dist",
+        "paths": {
+            "@presign/*": ["./src/presign/*"],
+            "@domain/*": ["./src/domain/*"],
+            "@shared/*": ["./src/shared/*"],
+            "@application/*": ["./src/application/*"],
+            "@/*": ["./src/*"]
+        }
+    },
+    "exclude": ["node_modules"]
+}
