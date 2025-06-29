@@ -1,3 +1,4 @@
+import { UploxAppConfig } from '@application/app-config';
 import { FileHashes, UploxFile } from '@domain/file';
 import { fetchFile } from '@shared/fetch';
 import { hash } from '@shared/hash';
@@ -27,7 +28,12 @@ export type PresignConfig = z.infer<typeof PresignConfigSchema>;
  * @param logger - The logger
  */
 export class PresignService {
-    constructor(private readonly logger: UploxLogger) {}
+    constructor(
+        private readonly logger: UploxLogger,
+        private readonly config: UploxAppConfig,
+    ) {
+        this.config = config;
+    }
 
     public async createPresignForString(
         fileId: string,
@@ -50,10 +56,7 @@ export class PresignService {
         const hashAlgorithm = config.algorithm;
         let uploxFile: UploxFile;
         if (hashAlgorithm === 'all') {
-            const hashes = await Promise.all([
-                hash(file, 'blake3'),
-                hash(file, 'sha256'),
-            ]);
+            const hashes = await Promise.all([hash(file, 'blake3'), hash(file, 'sha256')]);
             uploxFile = UploxFile.fromFileWithHashes(fileId, file, {
                 blake3: hashes[0],
                 sha256: hashes[1],

@@ -99,7 +99,7 @@ describe('getDefaults', () => {
 
     it('should call defaultValue function for ZodDefault instances', () => {
         const mockFunction = vi.fn().mockReturnValue('dynamic value');
-        
+
         const schema = z.object({
             normalField: z.string(),
             dynamicField: z.string().default(mockFunction),
@@ -114,29 +114,35 @@ describe('getDefaults', () => {
 
     it('should handle complex nested default values', () => {
         const schema = z.object({
-            user: z.object({
-                profile: z.object({
-                    preferences: z.object({
-                        theme: z.string().default('dark'),
-                        notifications: z.boolean().default(true),
-                    }).default({
-                        theme: 'light',
-                        notifications: false,
-                    }),
-                }).default({
-                    preferences: {
-                        theme: 'system',
-                        notifications: true,
+            user: z
+                .object({
+                    profile: z
+                        .object({
+                            preferences: z
+                                .object({
+                                    theme: z.string().default('dark'),
+                                    notifications: z.boolean().default(true),
+                                })
+                                .default({
+                                    theme: 'light',
+                                    notifications: false,
+                                }),
+                        })
+                        .default({
+                            preferences: {
+                                theme: 'system',
+                                notifications: true,
+                            },
+                        }),
+                })
+                .default({
+                    profile: {
+                        preferences: {
+                            theme: 'auto',
+                            notifications: false,
+                        },
                     },
                 }),
-            }).default({
-                profile: {
-                    preferences: {
-                        theme: 'auto',
-                        notifications: false,
-                    },
-                },
-            }),
             settings: z.array(z.string()).default(['setting1', 'setting2']),
         });
 

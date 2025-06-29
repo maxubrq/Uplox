@@ -88,7 +88,7 @@ export function parseObjectToLogMessage(obj: any): string {
     let ret = '[';
     for (const key in obj) {
         const value = obj[key];
-        
+
         if (value === null) {
             ret += `${key}=null `;
         } else if (value === undefined) {
