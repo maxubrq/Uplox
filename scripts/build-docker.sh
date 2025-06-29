@@ -80,8 +80,8 @@ for dockerfile_dir in "${DOCKERFILE_DIRS[@]}"; do
     
     # Build the Docker image with repo root as context and specify Dockerfile location
     if docker build --build-arg INCLUDE_CLAMAV="$INCLUDE_CLAMAV" -f "$dockerfile_dir/Dockerfile" -t "$image_name" .; then
-        # Get the image size
-        image_size=$(docker images --format "{{.Size}}" "$image_name:latest" | head -n 1)
+        # Get the image size (more robust approach)
+        image_size=$(docker images --format "{{.Size}}" "$image_name" 2>/dev/null | head -n 1 || echo "Unknown")
         print_success "Successfully built image: $image_name"
         print_info "Image size: $image_size"
         ((SUCCESS_COUNT++))

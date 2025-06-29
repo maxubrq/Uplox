@@ -138,7 +138,7 @@ jobs:
     runs-on: ubuntu-latest
     
     outputs:
-      image-digest: ${{ steps.build.outputs.digest }}
+      built-images: ${{ steps.build.outputs.images }}
       
     steps:
     - name: Checkout code
@@ -147,20 +147,36 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build Docker image
+    - name: Build Docker images
       id: build
       run: |
         chmod +x scripts/build-docker.sh
         ./scripts/build-docker.sh true
         
-        # Tag the image for security scanning
-        docker tag uplox:latest uplox:scan
-        echo "digest=$(docker images --digests uplox:latest --format '{{.Digest}}')" >> $GITHUB_OUTPUT
+        # Get all built images dynamically
+        # Find all apps with Dockerfiles
+        BUILT_IMAGES=()
+        while IFS= read -r -d '' dockerfile_path; do
+          dockerfile_dir=$(dirname "$dockerfile_path")
+          image_name=$(basename "$dockerfile_dir")
+          BUILT_IMAGES+=("$image_name")
+        done < <(find apps -name "Dockerfile" -type f -print0)
+        
+        # Convert array to JSON string for output
+        IMAGES_JSON=$(printf '%s\n' "${BUILT_IMAGES[@]}" | jq -R . | jq -s .)
+        echo "images=$IMAGES_JSON" >> $GITHUB_OUTPUT
+        
+        # Tag the first image for security scanning (backward compatibility)
+        if [ ${#BUILT_IMAGES[@]} -gt 0 ]; then
+          docker tag "${BUILT_IMAGES[0]}:latest" "${BUILT_IMAGES[0]}:scan"
+          echo "scan-image=${BUILT_IMAGES[0]}" >> $GITHUB_OUTPUT
+        fi
 
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
+      if: steps.build.outputs.scan-image != ''
       with:
-        image-ref: 'uplox:scan'
+        image-ref: '${{ steps.build.outputs.scan-image }}:scan'
         format: 'sarif'
         output: 'trivy-results.sarif'
 
@@ -171,38 +187,46 @@ jobs:
         sarif_file: 'trivy-results.sarif'
 
     - name: Run Docker Scout (optional additional security check)
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && steps.build.outputs.scan-image != ''
       run: |
         curl -sSfL https://raw.githubusercontent.com/docker/scout-cli/main/install.sh | sh -s --
-        docker scout cves uplox:scan --exit-code --only-severity critical,high
+        docker scout cves "${{ steps.build.outputs.scan-image }}:scan" --exit-code --only-severity critical,high
 
-    - name: Save Docker image
+    - name: Save Docker images
       if: env.PUSH_TO_DOCKERHUB == 'true'
       run: |
-        docker save uplox:latest | gzip > uplox-image.tar.gz
+        # Save all built images
+        IMAGES='${{ steps.build.outputs.images }}'
+        echo "$IMAGES" | jq -r '.[]' | while read -r image_name; do
+          echo "Saving image: $image_name"
+          docker save "$image_name:latest" | gzip > "${image_name}-image.tar.gz"
+        done
 
-    - name: Upload Docker image artifact
+    - name: Upload Docker image artifacts
       if: env.PUSH_TO_DOCKERHUB == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: docker-image
-        path: uplox-image.tar.gz
+        name: docker-images
+        path: '*-image.tar.gz'
         retention-days: 1
 
   push-to-dockerhub:
     needs: build-and-security
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        image: ${{ fromJson(needs.build-and-security.outputs.built-images) }}
     steps:
-    - name: Download Docker image artifact
+    - name: Download Docker image artifacts
       if: env.PUSH_TO_DOCKERHUB == 'true'
       uses: actions/download-artifact@v4
       with:
-        name: docker-image
+        name: docker-images
 
     - name: Load Docker image
       if: env.PUSH_TO_DOCKERHUB == 'true'
       run: |
-        docker load < uplox-image.tar.gz
+        docker load < "${{ matrix.image }}-image.tar.gz"
 
     - name: Log in to Docker Hub
       if: env.PUSH_TO_DOCKERHUB == 'true'
@@ -216,7 +240,7 @@ jobs:
       id: meta
       uses: docker/metadata-action@v5
       with:
-        images: ${{ secrets.DOCKERHUB_USERNAME }}/uplox
+        images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}
         tags: |
           type=ref,event=branch
           type=ref,event=pr
@@ -228,8 +252,8 @@ jobs:
       run: |
         # Tag the image with metadata
         for tag in ${{ steps.meta.outputs.tags }}; do
-          docker tag uplox:latest $tag
-          docker push $tag
+          docker tag "${{ matrix.image }}:latest" "$tag"
+          docker push "$tag"
         done
 
     - name: Update Docker Hub description
@@ -238,5 +262,5 @@ jobs:
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_PASSWORD }}
-        repository: ${{ secrets.DOCKERHUB_USERNAME }}/uplox
+        repository: ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.image }}
         readme-filepath: ./README.md
