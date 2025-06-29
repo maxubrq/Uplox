@@ -15,6 +15,8 @@ export default defineConfig({
         alias: {
             '@domain': path.resolve(__dirname, './src/domain'),
             '@shared': path.resolve(__dirname, './src/shared'),
+            '@application': path.resolve(__dirname, './src/application'),
+            '@presign': path.resolve(__dirname, './src/presign'),
             '@': path.resolve(__dirname, './src'),
         },
     },
