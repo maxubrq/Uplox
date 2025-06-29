@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+  security-events: write
+
 env:
   REGISTRY: docker.io
   IMAGE_NAME: uplox
@@ -52,30 +56,41 @@ jobs:
 
     - name: Generate coverage report
       run: |
-        # Extract coverage percentage and test results
-        COVERAGE=$(cat apps/uplox/coverage/coverage-summary.json | jq -r '.total.lines.pct // 0')
-        TEST_STATUS="passed"
-        
-        # Check if all tests passed (this assumes vitest exits with 0 on success)
-        if [ $? -ne 0 ]; then
-          TEST_STATUS="failed"
+        # Check if coverage file exists and extract coverage percentage
+        COVERAGE_FILE="apps/uplox/coverage/coverage-summary.json"
+        if [ -f "$COVERAGE_FILE" ]; then
+          COVERAGE=$(cat "$COVERAGE_FILE" | jq -r '.total.lines.pct // 0')
+          # Ensure COVERAGE is a valid number
+          if ! [[ "$COVERAGE" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+            COVERAGE="0"
+          fi
+        else
+          echo "Coverage file not found at $COVERAGE_FILE"
+          COVERAGE="0"
         fi
+        
+        TEST_STATUS="passed"
         
         echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
         echo "TEST_STATUS=$TEST_STATUS" >> $GITHUB_ENV
+        echo "Coverage: $COVERAGE%"
 
     - name: Create coverage badge
       run: |
-        COVERAGE=${{ env.COVERAGE }}
-        TEST_STATUS=${{ env.TEST_STATUS }}
+        COVERAGE="${{ env.COVERAGE }}"
+        TEST_STATUS="${{ env.TEST_STATUS }}"
         
-        # Determine coverage color
-        if (( $(echo "$COVERAGE >= 75" | bc -l) )); then
+        # Ensure COVERAGE is a valid number for comparison
+        if ! [[ "$COVERAGE" =~ ^[0-9]+\.?[0-9]*$ ]]; then
+          COVERAGE="0"
+        fi
+        
+        # Determine coverage color using awk instead of bc
+        COVERAGE_COLOR="red"
+        if awk "BEGIN {exit !($COVERAGE >= 75)}"; then
           COVERAGE_COLOR="brightgreen"
-        elif (( $(echo "$COVERAGE >= 50" | bc -l) )); then
+        elif awk "BEGIN {exit !($COVERAGE >= 50)}"; then
           COVERAGE_COLOR="yellow"
-        else
-          COVERAGE_COLOR="red"
         fi
         
         # Determine test status color
@@ -85,7 +100,7 @@ jobs:
           TEST_COLOR="red"
         fi
         
-        # Create badge URLs
+        # Create badge URLs (URL encode the % sign)
         COVERAGE_BADGE="![Coverage](https://img.shields.io/badge/coverage-${COVERAGE}%25-${COVERAGE_COLOR})"
         TEST_BADGE="![Tests](https://img.shields.io/badge/tests-${TEST_STATUS}-${TEST_COLOR})"
         
