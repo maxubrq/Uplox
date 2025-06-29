@@ -84,7 +84,7 @@ for dockerfile_dir in "${DOCKERFILE_DIRS[@]}"; do
         image_size=$(docker images --format "{{.Size}}" "$image_name" 2>/dev/null | head -n 1 || echo "Unknown")
         print_success "Successfully built image: $image_name"
         print_info "Image size: $image_size"
-        ((SUCCESS_COUNT++))
+        SUCCESS_COUNT=$((SUCCESS_COUNT + 1))
     else
         print_error "Failed to build image: $image_name"
     fi
