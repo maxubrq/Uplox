@@ -71,7 +71,6 @@ export function getColorByLevel(level: UploxLoggerLevel) {
  * ```
  */
 export function padTo(str: string, length: number) {
-    if (!str) return '';
     return str.length < length ? str + ' '.repeat(length - str.length) : str;
 }
 
@@ -95,7 +94,7 @@ export function parseObjectToLogMessage(obj: any): string {
         } else if (value === undefined) {
             ret += `${key}=undefined `;
         } else if (typeof value === 'string') {
-            ret += `${key}="${value}" `;
+            ret += `${key}=${value} `;
         } else if (typeof value === 'number' || typeof value === 'boolean') {
             ret += `${key}=${value} `;
         } else if (value instanceof Array) {
