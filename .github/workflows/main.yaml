@@ -203,6 +203,165 @@ jobs:
       with:
         sarif_file: 'trivy-results.sarif'
 
+    - name: Parse Trivy results and create security badge
+      if: always()
+      run: |
+        # Parse SARIF results to extract vulnerability counts
+        if [ -f "trivy-results.sarif" ]; then
+          # Extract vulnerability counts by severity using jq and Trivy-specific properties
+          # Trivy uses properties.security-severity for actual severity levels
+          CRITICAL=$(cat trivy-results.sarif | jq -r '[.runs[].results[]? | select(.properties."security-severity" == "CRITICAL" or .level == "error")] | length')
+          HIGH=$(cat trivy-results.sarif | jq -r '[.runs[].results[]? | select(.properties."security-severity" == "HIGH" or (.level == "warning" and (.properties."security-severity" // "") != "MEDIUM" and (.properties."security-severity" // "") != "LOW"))] | length')
+          MEDIUM=$(cat trivy-results.sarif | jq -r '[.runs[].results[]? | select(.properties."security-severity" == "MEDIUM" or (.level == "note" and (.properties."security-severity" // "") != "LOW"))] | length')
+          LOW=$(cat trivy-results.sarif | jq -r '[.runs[].results[]? | select(.properties."security-severity" == "LOW" or (.level == "info"))] | length')
+          
+          # Also get total count as fallback
+          TOTAL_DIRECT=$(cat trivy-results.sarif | jq -r '[.runs[].results[]?] | length')
+          
+          # Handle null/empty results
+          CRITICAL=${CRITICAL:-0}
+          HIGH=${HIGH:-0}
+          MEDIUM=${MEDIUM:-0}
+          LOW=${LOW:-0}
+          TOTAL_DIRECT=${TOTAL_DIRECT:-0}
+          
+          TOTAL=$((CRITICAL + HIGH + MEDIUM + LOW))
+          
+          # Use direct total if our parsing missed something
+          if [ $TOTAL_DIRECT -gt $TOTAL ]; then
+            TOTAL=$TOTAL_DIRECT
+          fi
+          
+          # Determine badge color and message based on vulnerabilities
+          if [ $CRITICAL -gt 0 ]; then
+            SECURITY_COLOR="critical"
+            if [ $TOTAL -gt $CRITICAL ]; then
+              SECURITY_MESSAGE="${TOTAL}%20vulns%20(${CRITICAL}%20critical)"
+            else
+              SECURITY_MESSAGE="${CRITICAL}%20critical"
+            fi
+          elif [ $HIGH -gt 0 ]; then
+            SECURITY_COLOR="important"
+            if [ $TOTAL -gt $HIGH ]; then
+              SECURITY_MESSAGE="${TOTAL}%20vulns%20(${HIGH}%20high)"
+            else
+              SECURITY_MESSAGE="${HIGH}%20high"
+            fi
+          elif [ $MEDIUM -gt 0 ]; then
+            SECURITY_COLOR="yellow"
+            if [ $TOTAL -gt $MEDIUM ]; then
+              SECURITY_MESSAGE="${TOTAL}%20vulns%20(${MEDIUM}%20medium)"
+            else
+              SECURITY_MESSAGE="${MEDIUM}%20medium"
+            fi
+          elif [ $LOW -gt 0 ]; then
+            SECURITY_COLOR="informational"
+            if [ $TOTAL -gt $LOW ]; then
+              SECURITY_MESSAGE="${TOTAL}%20vulns%20(${LOW}%20low)"
+            else
+              SECURITY_MESSAGE="${LOW}%20low"
+            fi
+          elif [ $TOTAL -gt 0 ]; then
+            SECURITY_COLOR="lightgrey"
+            SECURITY_MESSAGE="${TOTAL}%20findings"
+          else
+            SECURITY_COLOR="success"
+            SECURITY_MESSAGE="no%20vulnerabilities"
+          fi
+          
+          # Create security badge
+          SECURITY_BADGE="![Security](https://img.shields.io/badge/security-${SECURITY_MESSAGE}-${SECURITY_COLOR})"
+          
+          echo "SECURITY_BADGE=$SECURITY_BADGE" >> $GITHUB_ENV
+          echo "TOTAL_VULNS=$TOTAL" >> $GITHUB_ENV
+          echo "CRITICAL_VULNS=$CRITICAL" >> $GITHUB_ENV
+          echo "HIGH_VULNS=$HIGH" >> $GITHUB_ENV
+          echo "MEDIUM_VULNS=$MEDIUM" >> $GITHUB_ENV
+          echo "LOW_VULNS=$LOW" >> $GITHUB_ENV
+          
+          echo "Security scan results: Total: $TOTAL, Critical: $CRITICAL, High: $HIGH, Medium: $MEDIUM, Low: $LOW"
+        else
+          echo "Trivy results file not found"
+          SECURITY_BADGE="![Security](https://img.shields.io/badge/security-scan%20failed-red)"
+          echo "SECURITY_BADGE=$SECURITY_BADGE" >> $GITHUB_ENV
+        fi
+
+    - name: Create security summary report
+      if: always()
+      run: |
+        # Create a detailed security report
+        cat > security-report.md << EOF
+        # Security Scan Report
+        
+        **Scan Date:** $(date -u)
+        **Image Scanned:** ${{ steps.build.outputs.scan-image }}:scan
+        
+        ## Vulnerability Summary
+        - **Critical:** ${{ env.CRITICAL_VULNS }}
+        - **High:** ${{ env.HIGH_VULNS }}
+        - **Medium:** ${{ env.MEDIUM_VULNS }}
+        - **Low:** ${{ env.LOW_VULNS }}
+        - **Total:** ${{ env.TOTAL_VULNS }}
+        
+        ## Badge
+        ${{ env.SECURITY_BADGE }}
+        
+        ## Raw Results
+        The detailed SARIF results are available in the artifacts.
+        EOF
+
+    - name: Update README with security badge
+      if: always()
+      run: |
+        # Update README.md with security badge
+        if [ -f README.md ]; then
+          # Remove existing security badge if it exists
+          sed -i '/!\[Security\]/d' README.md
+          
+          # Add new security badge after existing badges
+          if grep -q "!\[Coverage\]" README.md; then
+            # Add after the coverage badge line
+            sed -i "/!\[Coverage\]/a${{ env.SECURITY_BADGE }}" README.md
+          elif grep -q "!\[Tests\]" README.md; then
+            # Add after the tests badge line  
+            sed -i "/!\[Tests\]/a${{ env.SECURITY_BADGE }}" README.md
+          elif grep -q "^# " README.md; then
+            # Add after the title if no other badges exist
+            sed -i "/^# /a${{ env.SECURITY_BADGE }}" README.md
+          else
+            # Add at the top if no title exists
+            echo -e "${{ env.SECURITY_BADGE }}\n$(cat README.md)" > README.md
+          fi
+          
+          echo "Updated README.md with security badge: ${{ env.SECURITY_BADGE }}"
+        else
+          echo "README.md not found"
+        fi
+
+    - name: Commit security badge updates
+      if: always()
+      run: |
+        git config --global user.name 'github-actions[bot]'
+        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+        
+        if git diff --quiet README.md; then
+          echo "No changes to commit for security badge"
+        else
+          git add README.md
+          git commit -m "Update security badge [skip ci]"
+          git push
+        fi
+
+    - name: Upload security artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-scan-results
+        path: |
+          trivy-results.sarif
+          security-report.md
+        retention-days: 30
+
     - name: Save Docker images
       if: env.PUSH_TO_DOCKERHUB == 'true'
       run: |
