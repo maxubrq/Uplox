@@ -40,11 +40,7 @@ export class PresignService {
         this.config = config;
     }
 
-    public async createPresignForString(
-        fileId: string,
-        file: string,
-        config: PresignConfig,
-    ): Promise<PresignResult> {
+    public async createPresignForString(fileId: string, file: string, config: PresignConfig): Promise<PresignResult> {
         this.logger.info(`[Presign] Try to download file`, { from: file, timeoutMs: config.timeoutMs });
         const fileToUpload = await fetchFile(file, config.timeoutMs);
         this.logger.info(`[Presign] File downloaded`, { file: fileToUpload.name });
@@ -57,11 +53,7 @@ export class PresignService {
         };
     }
 
-    protected async uploadAndPresign(
-        fileId: string,
-        file: File,
-        config: PresignConfig,
-    ): Promise<PresignResult> {
+    protected async uploadAndPresign(fileId: string, file: File, config: PresignConfig): Promise<PresignResult> {
         const hashAlgorithm = config.algorithm;
         let uploxFile: UploxFile;
         if (hashAlgorithm === 'all') {

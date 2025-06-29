@@ -18,6 +18,12 @@ import { PresignConfig, PresignConfigSchema, PresignService } from '../applicati
  *    - Response:
  *      - data: UploxFile
  *      - error: string
+ *  - GET /presign/:fileId/download
+ *    - Request:
+ *      - fileId: string
+ *    - Response:
+ *      - file: File
+ *      - error: string
  */
 export class PresignRoutes implements FeatureRoutes {
     constructor(
@@ -86,7 +92,7 @@ export class PresignRoutes implements FeatureRoutes {
         }
 
         const fileId = generateId(ResourceType.FILE);
-            const { 
+        const {
             error,
             file: uploxFile,
             scanResult,

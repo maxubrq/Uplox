@@ -2,26 +2,28 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UploxFile, type FileHashes } from '../file';
 
 // Mock File constructor if not available in Node environment
-global.File = global.File || class File {
-    constructor(
-        public chunks: BlobPart[],
-        public name: string,
-        public options: FilePropertyBag = {}
-    ) {
-        this.size = chunks.reduce((total, chunk) => {
-            if (typeof chunk === 'string') return total + chunk.length;
-            if (chunk instanceof ArrayBuffer) return total + chunk.byteLength;
-            if (chunk instanceof Uint8Array) return total + chunk.length;
-            return total;
-        }, 0);
-        this.type = options.type || '';
-        this.lastModified = options.lastModified || Date.now();
-    }
-    
-    size: number;
-    type: string;
-    lastModified: number;
-};
+global.File =
+    global.File ||
+    class File {
+        constructor(
+            public chunks: BlobPart[],
+            public name: string,
+            public options: FilePropertyBag = {},
+        ) {
+            this.size = chunks.reduce((total, chunk) => {
+                if (typeof chunk === 'string') return total + chunk.length;
+                if (chunk instanceof ArrayBuffer) return total + chunk.byteLength;
+                if (chunk instanceof Uint8Array) return total + chunk.length;
+                return total;
+            }, 0);
+            this.type = options.type || '';
+            this.lastModified = options.lastModified || Date.now();
+        }
+
+        size: number;
+        type: string;
+        lastModified: number;
+    };
 
 describe('UploxFile', () => {
     let mockFile: File;
@@ -34,20 +36,13 @@ describe('UploxFile', () => {
             md5: 'mock-md5-hash',
             sha1: 'mock-sha1-hash',
             sha256: 'mock-sha256-hash',
-            blake3: 'mock-blake3-hash'
+            blake3: 'mock-blake3-hash',
         };
     });
 
     describe('constructor', () => {
         it('should create UploxFile instance with all properties', () => {
-            const uploxFile = new UploxFile(
-                'test-id',
-                'test.txt',
-                1024,
-                'text/plain',
-                mockHashes,
-                mockFile
-            );
+            const uploxFile = new UploxFile('test-id', 'test.txt', 1024, 'text/plain', mockHashes, mockFile);
 
             expect(uploxFile.id).toBe('test-id');
             expect(uploxFile.name).toBe('test.txt');
@@ -58,14 +53,7 @@ describe('UploxFile', () => {
         });
 
         it('should create UploxFile instance with null hashes', () => {
-            const uploxFile = new UploxFile(
-                'test-id',
-                'test.txt',
-                1024,
-                'text/plain',
-                null,
-                mockFile
-            );
+            const uploxFile = new UploxFile('test-id', 'test.txt', 1024, 'text/plain', null, mockFile);
 
             expect(uploxFile.hashes).toBeNull();
         });
@@ -84,11 +72,11 @@ describe('UploxFile', () => {
         });
 
         it('should handle File with different properties', () => {
-            const customFile = new File(['different content'], 'custom.pdf', { 
-                type: 'application/pdf' 
+            const customFile = new File(['different content'], 'custom.pdf', {
+                type: 'application/pdf',
             });
             const customHashes: FileHashes = {
-                blake3: 'custom-blake3-hash'
+                blake3: 'custom-blake3-hash',
             };
 
             const uploxFile = UploxFile.fromFileWithHashes('custom-id', customFile, customHashes);
@@ -130,7 +118,7 @@ describe('UploxFile', () => {
                 size: 1024,
                 type: 'application/octet-stream',
                 name: 'buffer-file.bin',
-                hashes: mockHashes
+                hashes: mockHashes,
             };
 
             const uploxFile = UploxFile.fromBufferWithMeta('buffer-id', buffer, meta);
@@ -151,7 +139,7 @@ describe('UploxFile', () => {
                 size: 12,
                 type: 'text/plain',
                 name: 'minimal.txt',
-                hashes: null
+                hashes: null,
             };
 
             const uploxFile = UploxFile.fromBufferWithMeta('minimal-id', buffer, meta);
@@ -163,13 +151,13 @@ describe('UploxFile', () => {
         it('should handle Buffer with partial hashes', () => {
             const buffer = Buffer.from('partial hash test');
             const partialHashes: FileHashes = {
-                blake3: 'only-blake3-hash'
+                blake3: 'only-blake3-hash',
             };
             const meta = {
                 size: 17,
                 type: 'text/plain',
                 name: 'partial.txt',
-                hashes: partialHashes
+                hashes: partialHashes,
             };
 
             const uploxFile = UploxFile.fromBufferWithMeta('partial-id', buffer, meta);
@@ -184,14 +172,7 @@ describe('UploxFile', () => {
 
     describe('toJSON', () => {
         it('should return JSON representation with all properties', () => {
-            const uploxFile = new UploxFile(
-                'json-id',
-                'json-test.txt',
-                2048,
-                'text/plain',
-                mockHashes,
-                mockFile
-            );
+            const uploxFile = new UploxFile('json-id', 'json-test.txt', 2048, 'text/plain', mockHashes, mockFile);
 
             const json = uploxFile.toJSON();
 
@@ -200,19 +181,12 @@ describe('UploxFile', () => {
                 name: 'json-test.txt',
                 size: 2048,
                 type: 'text/plain',
-                hashes: mockHashes
+                hashes: mockHashes,
             });
         });
 
         it('should return JSON representation with null hashes', () => {
-            const uploxFile = new UploxFile(
-                'json-null-id',
-                'null-hashes.txt',
-                512,
-                'text/plain',
-                null,
-                mockFile
-            );
+            const uploxFile = new UploxFile('json-null-id', 'null-hashes.txt', 512, 'text/plain', null, mockFile);
 
             const json = uploxFile.toJSON();
 
@@ -221,7 +195,7 @@ describe('UploxFile', () => {
                 name: 'null-hashes.txt',
                 size: 512,
                 type: 'text/plain',
-                hashes: null
+                hashes: null,
             });
         });
 
@@ -255,7 +229,7 @@ describe('UploxFile', () => {
                 mockFile.size,
                 mockFile.type,
                 mockHashes,
-                mockFile
+                mockFile,
             );
 
             expect(fileFromFactory.toJSON()).toEqual(fileFromConstructor.toJSON());
@@ -267,7 +241,7 @@ describe('UploxFile', () => {
                 size: mockFile.size,
                 type: mockFile.type,
                 name: mockFile.name,
-                hashes: mockHashes
+                hashes: mockHashes,
             };
 
             const fromFile = UploxFile.fromFileWithHashes('same-id', mockFile, mockHashes);

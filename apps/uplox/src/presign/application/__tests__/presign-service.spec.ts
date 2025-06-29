@@ -43,8 +43,8 @@ describe('PresignService', () => {
                 name: 'test.txt',
                 size: 1024,
                 type: 'text/plain',
-                hashes: { blake3: 'mock-blake3-hash', sha256: 'mock-sha256-hash' }
-            })
+                hashes: { blake3: 'mock-blake3-hash', sha256: 'mock-sha256-hash' },
+            }),
         };
     };
 
@@ -57,7 +57,7 @@ describe('PresignService', () => {
             debug: vi.fn(),
             error: vi.fn(),
             warn: vi.fn(),
-            log: vi.fn()
+            log: vi.fn(),
         } as unknown as UploxLogger;
 
         // Mock config
@@ -70,12 +70,12 @@ describe('PresignService', () => {
             minioAccessKey: 'testkey',
             minioSecretKey: 'testsecret',
             minioBucket: 'test-bucket',
-            minioRegion: 'us-east-1'
+            minioRegion: 'us-east-1',
         };
 
         // Mock storage
         mockStorage = {
-            uploadFile: vi.fn().mockResolvedValue(createMockUploxFile())
+            uploadFile: vi.fn().mockResolvedValue(createMockUploxFile()),
         } as unknown as UploxStorage;
 
         // Mock external functions
@@ -88,7 +88,9 @@ describe('PresignService', () => {
         (UploxFile as any).fromFileWithHashes = mockUploxFileFromFileWithHashes;
 
         mockScanner = {
-            scan: vi.fn().mockResolvedValue({ isMalware: false, isInfected: false, isError: false, error: null, version: null })
+            scan: vi
+                .fn()
+                .mockResolvedValue({ isMalware: false, isInfected: false, isError: false, error: null, version: null }),
         } as unknown as UploxScanner;
 
         presignService = new PresignService(mockLogger, mockConfig, mockStorage, mockScanner);
@@ -116,9 +118,9 @@ describe('PresignService', () => {
 
             const result = await presignService.createPresignForString(fileId, url, config);
 
-            expect(mockLogger.info).toHaveBeenCalledWith('[Presign] Try to download file', { 
-                from: url, 
-                timeoutMs: config.timeoutMs 
+            expect(mockLogger.info).toHaveBeenCalledWith('[Presign] Try to download file', {
+                from: url,
+                timeoutMs: config.timeoutMs,
             });
             expect(mockFetchFile).toHaveBeenCalledWith(url, config.timeoutMs);
             expect(result.error).toBeNull();
@@ -132,8 +134,7 @@ describe('PresignService', () => {
 
             mockFetchFile.mockRejectedValue(fetchError);
 
-            await expect(presignService.createPresignForString(fileId, url, config))
-                .rejects.toThrow('Network error');
+            await expect(presignService.createPresignForString(fileId, url, config)).rejects.toThrow('Network error');
 
             expect(mockFetchFile).toHaveBeenCalledWith(url, config.timeoutMs);
         });
@@ -158,7 +159,7 @@ describe('PresignService', () => {
             expect(mockHash).toHaveBeenCalledWith(mockFile, 'sha256');
             expect(mockUploxFileFromFileWithHashes).toHaveBeenCalledWith(fileId, mockFile, {
                 blake3: 'mock-blake3-hash',
-                sha256: 'mock-sha256-hash'
+                sha256: 'mock-sha256-hash',
             });
             expect(mockStorage.uploadFile).toHaveBeenCalledWith(mockUploxFile);
             expect(result.error).toBeNull();
@@ -177,7 +178,7 @@ describe('PresignService', () => {
             expect(mockHash).toHaveBeenCalledTimes(1);
             expect(mockHash).toHaveBeenCalledWith(mockFile, 'blake3');
             expect(mockUploxFileFromFileWithHashes).toHaveBeenCalledWith(fileId, mockFile, {
-                blake3: 'mock-blake3-hash'
+                blake3: 'mock-blake3-hash',
             });
             expect(result.error).toBeNull();
             expect(result.file).toBe(mockUploxFile);
@@ -195,7 +196,7 @@ describe('PresignService', () => {
             expect(mockHash).toHaveBeenCalledTimes(1);
             expect(mockHash).toHaveBeenCalledWith(mockFile, 'sha256');
             expect(mockUploxFileFromFileWithHashes).toHaveBeenCalledWith(fileId, mockFile, {
-                sha256: 'mock-sha256-hash'
+                sha256: 'mock-sha256-hash',
             });
             expect(result.error).toBeNull();
             expect(result.file).toBe(mockUploxFile);
@@ -210,11 +211,11 @@ describe('PresignService', () => {
 
             await (presignService as any).uploadAndPresign(fileId, mockFile, config);
 
-            expect(mockLogger.debug).toHaveBeenCalledWith('[Presign] Hashes', { 
-                uploxFile: mockUploxFile.toJSON() 
+            expect(mockLogger.debug).toHaveBeenCalledWith('[Presign] Hashes', {
+                uploxFile: mockUploxFile.toJSON(),
             });
-            expect(mockLogger.info).toHaveBeenCalledWith('[Presign] File uploaded', { 
-                fileId: mockUploxFile.id 
+            expect(mockLogger.info).toHaveBeenCalledWith('[Presign] File uploaded', {
+                fileId: mockUploxFile.id,
             });
         });
     });
@@ -288,10 +289,11 @@ describe('PresignService', () => {
             expect(result.requestId).toBe(requestId);
             expect(result.fileId).toBe(fileId);
             expect(result.file).toBeNull();
-            expect(mockLogger.error).toHaveBeenCalledWith(
-                '[Presign] Failed to create presign',
-                { requestId, fileId, error: processingError }
-            );
+            expect(mockLogger.error).toHaveBeenCalledWith('[Presign] Failed to create presign', {
+                requestId,
+                fileId,
+                error: processingError,
+            });
         });
 
         it('should handle storage upload errors', async () => {
@@ -307,10 +309,11 @@ describe('PresignService', () => {
 
             expect(result.error).toBeInstanceOf(Error);
             expect(result.error?.message).toBe('Failed to create presign');
-            expect(mockLogger.error).toHaveBeenCalledWith(
-                '[Presign] Failed to create presign',
-                { requestId, fileId, error: uploadError }
-            );
+            expect(mockLogger.error).toHaveBeenCalledWith('[Presign] Failed to create presign', {
+                requestId,
+                fileId,
+                error: uploadError,
+            });
         });
 
         it('should handle URL fetch errors in string path', async () => {
@@ -324,17 +327,18 @@ describe('PresignService', () => {
 
             expect(result.error).toBeInstanceOf(Error);
             expect(result.error?.message).toBe('Failed to create presign');
-            expect(mockLogger.error).toHaveBeenCalledWith(
-                '[Presign] Failed to create presign',
-                { requestId, fileId, error: fetchError }
-            );
+            expect(mockLogger.error).toHaveBeenCalledWith('[Presign] Failed to create presign', {
+                requestId,
+                fileId,
+                error: fetchError,
+            });
         });
     });
 
     describe('edge cases and configuration', () => {
         it('should use configuration values properly', () => {
             const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all', skipScan: false };
-            
+
             // Test that configuration values are set correctly
             expect(config.timeoutMs).toBe(5000);
             expect(config.algorithm).toBe('all');
@@ -344,7 +348,7 @@ describe('PresignService', () => {
             const fileId = 'test-file-id';
             const url = 'https://example.com/';
             const config: PresignConfig = { timeoutMs: 5000, algorithm: 'blake3', skipScan: false };
-            
+
             const mockFile = new File(['content'], 'file', { type: 'text/plain' });
             const mockUploxFile = createMockUploxFile(fileId);
 

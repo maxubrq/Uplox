@@ -16,6 +16,7 @@ export default defineConfig({
         alias: {
             '@domain': path.resolve(__dirname, './apps/uplox/src/domain'),
             '@shared': path.resolve(__dirname, './apps/uplox/src/shared'),
+            '@presign': path.resolve(__dirname, './apps/uplox/src/presign'),
             '@': path.resolve(__dirname, './apps/uplox/src'),
         },
     },

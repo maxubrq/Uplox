@@ -1,7 +1,7 @@
-import { UploxFile } from "@domain/file";
-import { ScannerResult, UploxScanner } from "@presign/application/scanner";
-import { UploxLogger } from "@shared/logger";
-import fs from 'fs';        
+import { UploxFile } from '@domain/file';
+import { ScannerResult, UploxScanner } from '@presign/application/scanner';
+import { UploxLogger } from '@shared/logger';
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { exec } from 'child_process';
@@ -12,7 +12,7 @@ export class ClamavClient {
     private parseClamavSummary(result: string): ScannerResult {
         const lines = result.split('\n');
         const isMalware = lines.some(line => line.includes('FOUND'));
-        
+
         // Parse the infected files count from "Infected files: X" line
         const infectedFilesLine = lines.find(line => line.includes('Infected files:'));
         let isInfected = false;
@@ -23,7 +23,7 @@ export class ClamavClient {
                 isInfected = infectedCount > 0;
             }
         }
-        
+
         const isError = lines.some(line => line.includes('ERROR') || line.includes('No such file or directory'));
         const version = lines.find(line => line.includes('clamscan'))?.split(' ')[1] ?? null;
         return { isMalware, isInfected, isError, error: null, version, name: 'clamav' };
@@ -45,7 +45,7 @@ export class ClamavClient {
     }
 
     public async scanFile(filePath: string): Promise<ScannerResult> {
-        try{
+        try {
             this.logger.info(`[ClamavClient] Scanning file`, { filePath });
 
             const version = await this.getClamavVersion();
@@ -62,7 +62,7 @@ export class ClamavClient {
                 ...result,
                 version,
             };
-        }catch(error){
+        } catch (error) {
             this.logger.error(`[ClamavClient] Failed to scan file`, { error });
             throw error;
         }
