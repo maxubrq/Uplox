@@ -192,7 +192,9 @@ jobs:
       with:
         image-ref: '${{ steps.build.outputs.scan-image }}:scan'
         format: 'sarif'
+        scan-type: 'image'
         output: 'trivy-results.sarif'
+        scanners: "vuln"
         skip-files: '*.tar,*.zip,*.jar,*.war,*.gem,*.whl,*.cvd'
 
     - name: Upload Trivy scan results to GitHub Security tab
