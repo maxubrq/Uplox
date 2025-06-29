@@ -6,10 +6,12 @@ import { PresignService } from '@presign/application';
 import { AppEnv } from '@application/ports';
 import { UploxAppConfig, UploxAppConfigLoader } from '@application/app-config';
 import { MinioStorage } from '@presign/presentation/minio-storage';
+import { ClamavScanner } from '@presign/presentation/clamav-scanner';
 
 async function presignFeature(app: Hono<AppEnv>, logger: UploxLogger, config: UploxAppConfig) {
     const minioStorage = await MinioStorage.getInstance(config, logger);
-    const presignService = new PresignService(logger, config, minioStorage);
+    const clamavScanner = new ClamavScanner(logger);
+    const presignService = new PresignService(logger, config, minioStorage, clamavScanner);
     const presignRoutes = new PresignRoutes(presignService, logger);
     presignRoutes.attachRoutes(app);
 }

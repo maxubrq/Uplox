@@ -89,12 +89,14 @@ export class PresignRoutes implements FeatureRoutes {
             const { 
             error,
             file: uploxFile,
+            scanResult,
         } = await this.presignService.createPresign(requestId, fileId, file, mergedConfig);
 
         const result: ApplicationResult<any> = {
             requestId,
             data: uploxFile?.toJSON(),
             error: error?.message ?? undefined,
+            scanResult,
         };
         this.logger.info('[Presign] Response', { requestId, fileId, result });
 

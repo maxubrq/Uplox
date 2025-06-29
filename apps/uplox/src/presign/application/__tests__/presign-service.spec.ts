@@ -7,6 +7,7 @@ import { UploxFile, FileHashes } from '@domain/file';
 import { fetchFile } from '@shared/fetch';
 import { hash } from '@shared/hash';
 import { isUrl } from '@shared/utils';
+import { UploxScanner } from '@presign/application/scanner';
 
 // Mock all dependencies
 vi.mock('@shared/fetch');
@@ -19,6 +20,7 @@ describe('PresignService', () => {
     let mockLogger: UploxLogger;
     let mockConfig: UploxAppConfig;
     let mockStorage: UploxStorage;
+    let mockScanner: UploxScanner;
     let mockFetchFile: Mock;
     let mockHash: Mock;
     let mockIsUrl: Mock;
@@ -85,7 +87,11 @@ describe('PresignService', () => {
         // Mock UploxFile static method
         (UploxFile as any).fromFileWithHashes = mockUploxFileFromFileWithHashes;
 
-        presignService = new PresignService(mockLogger, mockConfig, mockStorage);
+        mockScanner = {
+            scan: vi.fn().mockResolvedValue({ isMalware: false, isInfected: false, isError: false, error: null, version: null })
+        } as unknown as UploxScanner;
+
+        presignService = new PresignService(mockLogger, mockConfig, mockStorage, mockScanner);
     });
 
     describe('constructor', () => {
@@ -95,7 +101,7 @@ describe('PresignService', () => {
     });
 
     describe('createPresignForString', () => {
-        const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all' };
+        const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all', skipScan: false };
 
         it('should successfully create presign for valid URL string', async () => {
             const fileId = 'test-file-id';
@@ -138,7 +144,7 @@ describe('PresignService', () => {
         const mockFile = createMockFile();
 
         it('should handle "all" algorithm correctly', async () => {
-            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all' };
+            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all', skipScan: false };
             const mockUploxFile = createMockUploxFile(fileId);
 
             mockHash.mockResolvedValueOnce('mock-blake3-hash');
@@ -160,7 +166,7 @@ describe('PresignService', () => {
         });
 
         it('should handle "blake3" algorithm correctly', async () => {
-            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'blake3' };
+            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'blake3', skipScan: false };
             const mockUploxFile = createMockUploxFile(fileId);
 
             mockHash.mockResolvedValue('mock-blake3-hash');
@@ -178,7 +184,7 @@ describe('PresignService', () => {
         });
 
         it('should handle "sha256" algorithm correctly', async () => {
-            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'sha256' };
+            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'sha256', skipScan: false };
             const mockUploxFile = createMockUploxFile(fileId);
 
             mockHash.mockResolvedValue('mock-sha256-hash');
@@ -196,7 +202,7 @@ describe('PresignService', () => {
         });
 
         it('should log debug information', async () => {
-            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'blake3' };
+            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'blake3', skipScan: false };
             const mockUploxFile = createMockUploxFile(fileId);
 
             mockHash.mockResolvedValue('mock-blake3-hash');
@@ -216,7 +222,7 @@ describe('PresignService', () => {
     describe('createPresign', () => {
         const requestId = 'test-request-id';
         const fileId = 'test-file-id';
-        const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all' };
+        const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all', skipScan: false };
 
         it('should handle File input successfully', async () => {
             const mockFile = createMockFile();
@@ -327,7 +333,7 @@ describe('PresignService', () => {
 
     describe('edge cases and configuration', () => {
         it('should use configuration values properly', () => {
-            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all' };
+            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'all', skipScan: false };
             
             // Test that configuration values are set correctly
             expect(config.timeoutMs).toBe(5000);
@@ -337,7 +343,7 @@ describe('PresignService', () => {
         it('should handle empty file name in fetch', async () => {
             const fileId = 'test-file-id';
             const url = 'https://example.com/';
-            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'blake3' };
+            const config: PresignConfig = { timeoutMs: 5000, algorithm: 'blake3', skipScan: false };
             
             const mockFile = new File(['content'], 'file', { type: 'text/plain' });
             const mockUploxFile = createMockUploxFile(fileId);
