@@ -5,9 +5,9 @@ import { hash } from '@shared/hash';
 import { UploxLogger } from '@shared/logger';
 import { isUrl } from '@shared/utils';
 import { z } from 'zod';
+import { UploxStorage } from '@presign/application/storage';
 
 export type PresignResult = {
-    presign: string;
     error: Error | null;
     requestId: string;
     fileId: string;
@@ -31,6 +31,7 @@ export class PresignService {
     constructor(
         private readonly logger: UploxLogger,
         private readonly config: UploxAppConfig,
+        private readonly storage: UploxStorage,
     ) {
         this.config = config;
     }
@@ -39,20 +40,20 @@ export class PresignService {
         fileId: string,
         file: string,
         config: PresignConfig,
-    ): Promise<{ presign: string; error: Error | null; file: UploxFile | null }> {
+    ): Promise<{ error: Error | null; file: UploxFile | null }> {
         this.logger.info(`[Presign] Try to download file`, { from: file, timeoutMs: config.timeoutMs });
         const fileToUpload = await fetchFile(file, config.timeoutMs);
         this.logger.info(`[Presign] File downloaded`, { file: fileToUpload.name });
 
         const result = await this.uploadAndPresign(fileId, fileToUpload, config);
-        return { presign: result.presign, error: result.error, file: result.file };
+        return { error: result.error, file: result.file };
     }
 
     protected async uploadAndPresign(
         fileId: string,
         file: File,
         config: PresignConfig,
-    ): Promise<{ presign: string; error: Error | null; file: UploxFile }> {
+    ): Promise<{ error: Error | null; file: UploxFile }> {
         const hashAlgorithm = config.algorithm;
         let uploxFile: UploxFile;
         if (hashAlgorithm === 'all') {
@@ -68,8 +69,13 @@ export class PresignService {
             } as unknown as FileHashes);
         }
 
-        this.logger.debug(`[Presign] Hashes`, { uploxFile });
-        return { presign: 'presign', error: null, file: uploxFile };
+        this.logger.debug(`[Presign] Hashes`, { uploxFile: uploxFile.toJSON() });
+
+        await this.storage.uploadFile(uploxFile);
+
+        this.logger.info(`[Presign] File uploaded`, { fileId: uploxFile.id });
+        
+        return { error: null, file: uploxFile };
     }
 
     public async createPresign(
@@ -80,7 +86,7 @@ export class PresignService {
     ): Promise<PresignResult> {
         const isString = typeof file === 'string';
         if (isString && !isUrl(file)) {
-            return { presign: 'presign', error: new Error('Invalid file url'), requestId, fileId, file: null };
+            return { error: new Error('Invalid file url'), requestId, fileId, file: null };
         }
 
         const createPresign = async (file: File | string) => {
@@ -93,7 +99,6 @@ export class PresignService {
         try {
             const result = await createPresign(file);
             return {
-                presign: result.presign,
                 error: result.error,
                 requestId,
                 fileId,
@@ -102,7 +107,6 @@ export class PresignService {
         } catch (e) {
             this.logger.error('[Presign] Failed to create presign', { requestId, fileId, error: e });
             return {
-                presign: 'presign',
                 error: new Error('Failed to create presign', { cause: e }),
                 requestId,
                 fileId,

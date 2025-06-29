@@ -5,18 +5,20 @@ import { PresignRoutes } from '@presign/presentation';
 import { PresignService } from '@presign/application';
 import { AppEnv } from '@application/ports';
 import { UploxAppConfig, UploxAppConfigLoader } from '@application/app-config';
+import { MinioStorage } from '@presign/presentation/minio-storage';
 
-function presignFeature(app: Hono<AppEnv>, logger: UploxLogger, config: UploxAppConfig) {
-    const presignService = new PresignService(logger, config);
+async function presignFeature(app: Hono<AppEnv>, logger: UploxLogger, config: UploxAppConfig) {
+    const minioStorage = await MinioStorage.getInstance(config, logger);
+    const presignService = new PresignService(logger, config, minioStorage);
     const presignRoutes = new PresignRoutes(presignService, logger);
     presignRoutes.attachRoutes(app);
 }
 
-function bootstrap() {
+async function bootstrap() {
     const app = new Hono<AppEnv>();
     const logger = getLogger('Uplox');
     const config = new UploxAppConfigLoader().loadFromEnv();
-    presignFeature(app, logger, config);
+    await presignFeature(app, logger, config);
     serve(
         {
             fetch: app.fetch,

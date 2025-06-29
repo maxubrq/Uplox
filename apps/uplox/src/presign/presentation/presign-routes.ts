@@ -16,7 +16,7 @@ import { PresignConfig, PresignConfigSchema, PresignService } from '../applicati
  *    - Request:
  *      - file: File
  *    - Response:
- *      - presign: string
+ *      - data: UploxFile
  *      - error: string
  */
 export class PresignRoutes implements FeatureRoutes {
@@ -25,6 +25,7 @@ export class PresignRoutes implements FeatureRoutes {
         private readonly logger: UploxLogger,
     ) {
         this.presignHandler = this.presignHandler.bind(this);
+        this.downloadFileHandler = this.downloadFileHandler.bind(this);
     }
 
     public async presignHandler(c: Context) {
@@ -85,17 +86,15 @@ export class PresignRoutes implements FeatureRoutes {
         }
 
         const fileId = generateId(ResourceType.FILE);
-        const {
-            presign,
+            const { 
             error,
             file: uploxFile,
         } = await this.presignService.createPresign(requestId, fileId, file, mergedConfig);
 
-        const result: ApplicationResult<string> = {
+        const result: ApplicationResult<any> = {
             requestId,
-            data: presign,
+            data: uploxFile?.toJSON(),
             error: error?.message ?? undefined,
-            file: uploxFile,
         };
         this.logger.info('[Presign] Response', { requestId, fileId, result });
 
@@ -106,12 +105,23 @@ export class PresignRoutes implements FeatureRoutes {
         return c.json(result, error ? 400 : 200);
     }
 
+    public async downloadFileHandler(c: Context) {
+        const fileId = c.req.param('fileId');
+        // TODO: download file from storage
+        return c.json({ fileId }, 200);
+    }
+
     public getRoutes(): Route[] {
         return [
             {
                 path: '/presign',
                 method: 'POST',
                 handler: this.presignHandler,
+            },
+            {
+                path: '/presign/:fileId/download',
+                method: 'GET',
+                handler: this.downloadFileHandler,
             },
         ];
     }

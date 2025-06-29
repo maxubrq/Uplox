@@ -12,13 +12,14 @@ export class UploxFile {
         public readonly size: number,
         public readonly type: string,
         public readonly hashes: FileHashes | null,
+        public readonly file: File,
     ) {}
 
     static fromFileWithHashes(id: string, file: File, hashes: FileHashes): UploxFile {
         const size = file.size;
         const type = file.type;
         const name = file.name;
-        return new UploxFile(id, name, size, type, hashes);
+        return new UploxFile(id, name, size, type, hashes, file);
     }
 
     static fromFile(id: string, file: File): UploxFile {
@@ -26,7 +27,15 @@ export class UploxFile {
         const type = file.type;
         const name = file.name;
 
-        return new UploxFile(id, name, size, type, null);
+        return new UploxFile(id, name, size, type, null, file);
+    }
+
+    static fromBufferWithMeta(id: string, buffer: Buffer, meta: any): UploxFile {
+        const size = meta.size;
+        const type = meta.type;
+        const name = meta.name;
+        const hashes = meta.hashes;
+        return new UploxFile(id, name, size, type, hashes, new File([buffer], name, { type }));
     }
 
     toJSON() {
