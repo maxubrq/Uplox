@@ -1,0 +1,67 @@
+# Local Development Dockerfile with ClamAV
+FROM node:24-alpine
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+
+# Install system dependencies including ClamAV
+RUN apk add --no-cache --virtual .build-deps \
+        curl \
+        wget \
+    && apk add --no-cache \
+        tini \
+        clamav \
+        clamav-daemon \
+        freshclam \
+        dumb-init \
+    && apk del .build-deps \
+    && rm -rf /var/cache/apk/* \
+    && rm -rf /tmp/*
+
+# Create app user for security
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+# Configure ClamAV directories and permissions
+RUN mkdir -p /var/log/clamav /var/lib/clamav /var/run/clamav \
+    && chown -R clamav:clamav /var/log/clamav /var/lib/clamav /var/run/clamav \
+    && chmod 755 /var/lib/clamav
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files for dependency installation
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY packages/prettier-config/package.json ./packages/prettier-config/
+COPY apps/uplox/package.json ./apps/uplox/
+
+# Install all dependencies (including dev dependencies for development)
+RUN pnpm install -r --frozen-lockfile
+
+# Copy source code
+COPY packages/ ./packages/
+COPY apps/uplox/ ./apps/uplox/
+
+# Update ClamAV database
+RUN freshclam --config-file=/etc/clamav/freshclam.conf || true
+
+# Check ClamAV version
+RUN freshclam --version
+
+# Change ownership of the app directory
+RUN chown -R appuser:appgroup /app
+
+# Switch to non-root user
+USER appuser
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+
+# Use tini as PID 1 for proper signal handling
+ENTRYPOINT ["tini", "--"]
+
+# Start the application in development mode
+CMD ["pnpm", "run", "dev"]
