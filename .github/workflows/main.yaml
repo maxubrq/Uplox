@@ -117,7 +117,7 @@ jobs:
           
           # Add new badges at the top after the title
           if grep -q "^# " README.md; then
-            sed -i "/^# /a\\n${{ env.COVERAGE_BADGE }} ${{ env.TEST_BADGE }}" README.md
+            sed -i "/^# /a\n${{ env.COVERAGE_BADGE }} ${{ env.TEST_BADGE }}" README.md
           else
             echo -e "${{ env.COVERAGE_BADGE }} ${{ env.TEST_BADGE }}\n$(cat README.md)" > README.md
           fi
@@ -153,18 +153,32 @@ jobs:
         chmod +x scripts/build-docker.sh
         ./scripts/build-docker.sh true
         
-        # Get all built images dynamically
-        # Find all apps with Dockerfiles
+        # Get all built images dynamically by matching what the build script actually creates
+        # The build script builds images with their original names when INCLUDE_CLAMAV=true
         BUILT_IMAGES=()
         while IFS= read -r -d '' dockerfile_path; do
           dockerfile_dir=$(dirname "$dockerfile_path")
           image_name=$(basename "$dockerfile_dir")
+          # When INCLUDE_CLAMAV=true, the build script uses the original name
           BUILT_IMAGES+=("$image_name")
         done < <(find apps -name "Dockerfile" -type f -print0)
         
-        # Convert array to JSON string for output
-        IMAGES_JSON=$(printf '%s\n' "${BUILT_IMAGES[@]}" | jq -R . | jq -s .)
+        # Convert array to JSON string for output (more robust approach)
+        if [ ${#BUILT_IMAGES[@]} -gt 0 ]; then
+          IMAGES_JSON="["
+          for i in "${!BUILT_IMAGES[@]}"; do
+            if [ $i -gt 0 ]; then
+              IMAGES_JSON+=","
+            fi
+            IMAGES_JSON+="\"${BUILT_IMAGES[$i]}\""
+          done
+          IMAGES_JSON+="]"
+        else
+          IMAGES_JSON="[]"
+        fi
+        
         echo "images=$IMAGES_JSON" >> $GITHUB_OUTPUT
+        echo "Built images JSON: $IMAGES_JSON"
         
         # Tag the first image for security scanning (backward compatibility)
         if [ ${#BUILT_IMAGES[@]} -gt 0 ]; then
