@@ -63,20 +63,15 @@ echo
 # Build each Docker image
 SUCCESS_COUNT=0
 TOTAL_COUNT=${#DOCKERFILE_DIRS[@]}
-# Argument to control ClamAV inclusion ./scripts/build-docker.sh false
-INCLUDE_CLAMAV=${1:-false}
-IS_LOCAL=${2:-false}
+IS_LOCAL=${1:-false}
 
 for dockerfile_dir in "${DOCKERFILE_DIRS[@]}"; do
     # Extract image name from directory path (e.g., apps/uplox -> uplox)
-    # If INCLUDE_CLAMAV is false, image name will be surfix with -noclamav
     image_name=$(basename "$dockerfile_dir")
     if [ "$IS_LOCAL" = "true" ]; then
         image_name="$image_name-local"
     else
-        if [ "$INCLUDE_CLAMAV" = "false" ]; then
-            image_name="$image_name-noclamav"
-        fi
+        image_name="$image_name"
     fi
     
     print_info "Building Docker image: $image_name"
@@ -89,7 +84,7 @@ for dockerfile_dir in "${DOCKERFILE_DIRS[@]}"; do
     fi
     
     # Build the Docker image with repo root as context and specify Dockerfile location
-    if docker build --build-arg INCLUDE_CLAMAV="$INCLUDE_CLAMAV" -f "$dockerfile_path" -t "$image_name" .; then
+    if docker build -f "$dockerfile_path" -t "$image_name" .; then
         # Get the image size (more robust approach)
         image_size=$(docker images --format "{{.Size}}" "$image_name" 2>/dev/null | head -n 1 || echo "Unknown")
         print_success "Successfully built image: $image_name"

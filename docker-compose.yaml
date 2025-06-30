@@ -4,9 +4,9 @@ services:
   uplox:
     build:
       context: .
-      dockerfile: apps/uplox/Dockerfile
+      dockerfile: apps/uplox/Dockerfile.local
     image: uplox-local:latest
-    container_name: uplox-app
+    container_name: uplox-uplox
     ports:
       - "3000:3000"
     volumes:
@@ -23,10 +23,38 @@ services:
       - MINIO_SECRET_KEY=miniosuperadmin
       - MINIO_BUCKET=uplox
       - MINIO_REGION=us-east-1
+      - SCANNER_HOST=scanner
+      - SCANNER_PORT=3310
     depends_on:
       - db
       - cache
       - storage
+    networks:
+      - uplox-network
+
+  scanner:
+    build:
+      context: .
+      dockerfile: apps/scanner/Dockerfile.local
+    image: scanner-local:latest
+    container_name: uplox-scanner
+    ports:
+      - "3310:3310"
+    volumes:
+      - ./infra/scanner/clamav:/var/lib/clamav
+      - ./apps/scanner/sample/sample.txt:/var/lib/clamav/sample.txt
+      - ./apps/scanner/config/clamav_conf.conf:/etc/clamav/clamd.conf
+      - ./apps/scanner/config/clamd.ctl:/var/run/clamav/clamd.ctl
+    command: |
+      freshclam &&
+      clamd -c /etc/clamav/clamd.conf &&
+      clamdscan --config-file=/etc/clamav/clamd.conf /var/lib/clamav/sample.txt
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5s bash -c '</dev/tcp/localhost/3310' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - uplox-network
 
@@ -81,8 +109,3 @@ services:
 networks:
   uplox-network:
     driver: bridge
-
-volumes:
-  cache_data:
-  storage_data:
-  db_data:

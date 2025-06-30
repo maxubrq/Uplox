@@ -41,11 +41,8 @@ RUN pnpm install --prod --frozen-lockfile \
     && rm -rf /tmp/* \
     && rm -rf /var/cache/apk/*
 
-# Production Stage - Conditionally include ClamAV
+# Production Stage
 FROM node:24-alpine AS production
-
-# Build argument to control ClamAV inclusion
-ARG INCLUDE_CLAMAV=false
 
 # Install base system dependencies
 RUN apk add --no-cache --virtual .build-deps \
@@ -53,26 +50,12 @@ RUN apk add --no-cache --virtual .build-deps \
         wget \
     && apk add --no-cache \
         tini \
-    && if [ "$INCLUDE_CLAMAV" = "true" ]; then \
-        apk add --no-cache \
-            clamav \
-            clamav-daemon \
-            freshclam \
-            dumb-init; \
-    fi \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* \
     && rm -rf /tmp/*
 
 # Create app user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Configure ClamAV directories and permissions (only if ClamAV is included)
-RUN if [ "$INCLUDE_CLAMAV" = "true" ]; then \
-        mkdir -p /var/log/clamav /var/lib/clamav /var/run/clamav \
-        && chown -R clamav:clamav /var/log/clamav /var/lib/clamav /var/run/clamav \
-        && chmod 755 /var/lib/clamav; \
-    fi
 
 # Set working directory
 WORKDIR /app
@@ -88,16 +71,6 @@ COPY --from=builder --chown=appuser:appgroup /app/apps/uplox/dist ./apps/uplox/d
 COPY --chown=appuser:appgroup package.json ./
 COPY --chown=appuser:appgroup apps/uplox/package.json ./apps/uplox/
 
-# Update ClamAV database (only if ClamAV is included)
-RUN if [ "$INCLUDE_CLAMAV" = "true" ]; then \
-        freshclam --config-file=/etc/clamav/freshclam.conf || true; \
-    fi
-
-# Check ClamAV version (only if ClamAV is included)
-RUN if [ "$INCLUDE_CLAMAV" = "true" ]; then \
-        freshclam --version; \
-    fi
-
 # Switch to non-root user
 USER appuser
 
@@ -108,7 +81,7 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
 
-# Use tini as PID 1 for proper signal handling (or dumb-init if ClamAV is included)
+# Use tini as PID 1 for proper signal handling
 ENTRYPOINT ["tini", "--"]
 
 # Start the application

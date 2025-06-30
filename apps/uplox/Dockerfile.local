@@ -1,18 +1,15 @@
-# Local Development Dockerfile with ClamAV
+# Local Development Dockerfile
 FROM node:24-alpine
 
 # Install pnpm
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
-# Install system dependencies including ClamAV
+# Install system dependencies
 RUN apk add --no-cache --virtual .build-deps \
         curl \
         wget \
     && apk add --no-cache \
         tini \
-        clamav \
-        clamav-daemon \
-        freshclam \
         dumb-init \
     && apk del .build-deps \
     && rm -rf /var/cache/apk/* \
@@ -20,11 +17,6 @@ RUN apk add --no-cache --virtual .build-deps \
 
 # Create app user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-
-# Configure ClamAV directories and permissions
-RUN mkdir -p /var/log/clamav /var/lib/clamav /var/run/clamav \
-    && chown -R clamav:clamav /var/log/clamav /var/lib/clamav /var/run/clamav \
-    && chmod 755 /var/lib/clamav
 
 # Set working directory
 WORKDIR /app
@@ -40,12 +32,6 @@ RUN pnpm install -r --frozen-lockfile
 # Copy source code
 COPY packages/ ./packages/
 COPY apps/uplox/ ./apps/uplox/
-
-# Update ClamAV database
-RUN freshclam --config-file=/etc/clamav/freshclam.conf || true
-
-# Check ClamAV version
-RUN freshclam --version
 
 # Change ownership of the app directory
 RUN chown -R appuser:appgroup /app
