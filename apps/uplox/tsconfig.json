@@ -11,9 +11,13 @@
         "outDir": "./dist",
         "paths": {
             "@presign/*": ["./src/presign/*"],
+            "@presign": ["./src/presign"],
             "@domain/*": ["./src/domain/*"],
+            "@domain": ["./src/domain"],
             "@shared/*": ["./src/shared/*"],
+            "@shared": ["./src/shared"],
             "@application/*": ["./src/application/*"],
+            "@application": ["./src/application"],
             "@/*": ["./src/*"]
         }
     },

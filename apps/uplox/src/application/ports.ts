@@ -1,6 +1,5 @@
 import { Context, Hono } from 'hono';
 import { UploxFile } from '@domain/file';
-import { ScannerResult } from '@presign/application/scanner';
 
 export type AppEnv = {
     Variables: {
@@ -28,5 +27,4 @@ export type ApplicationResult<T> = {
     link?: string;
     details?: string;
     file?: UploxFile | null;
-    scanResult?: ScannerResult;
 };
