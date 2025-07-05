@@ -1,0 +1,61 @@
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-05T04:56:48.143Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-05T04:59:14.845Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-05T04:59:14.847Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-05T04:59:31.808Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-05T04:59:31.810Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-05T05:04:57.794Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-05T05:04:57.796Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-05T05:07:16.914Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-05T05:07:16.916Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-05T05:07:42.609Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-05T05:07:42.611Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_e3trtsrv6p9nYnQ2zpBZDg",
+  "timestamp": "2025-07-05T05:07:45.579Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_u5E8vXW7oKH71q9A8vPfMD",
+  "timestamp": "2025-07-05T05:07:46.662Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_fMJsmNFTpus62G3xxZkbpF",
+  "timestamp": "2025-07-05T05:07:47.204Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_uyL56kPgLyUkmWaqF4WpQz",
+  "timestamp": "2025-07-05T05:07:47.384Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_kXFdt94CyCq48je1mqx1Bv",
+  "timestamp": "2025-07-05T05:07:47.564Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_83LQkX3gYjbuBTw1scA2a1",
+  "timestamp": "2025-07-05T05:07:47.747Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_37nFZc28mL3Aah7ParzGQV",
+  "timestamp": "2025-07-05T05:07:47.949Z"
+}

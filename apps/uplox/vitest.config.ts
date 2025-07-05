@@ -36,6 +36,8 @@ export default defineConfig({
             '@domain': path.resolve(__dirname, './src/domain'),
             '@shared': path.resolve(__dirname, './src/shared'),
             '@application': path.resolve(__dirname, './src/application'),
+            '@presentation': path.resolve(__dirname, './src/presentation'),
+            '@features': path.resolve(__dirname, './src/features'),
         },
     },
 });

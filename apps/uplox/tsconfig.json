@@ -46,7 +46,10 @@
             "@/*": ["./src/*"],
             "@domain/*": ["./src/domain/*"],
             "@shared/*": ["./src/shared/*"],
-            "@application/*": ["./src/application/*"]
+            "@application/*": ["./src/application/*"],
+            "@presentation/*": ["./src/presentation/*"],
+            "@presentation": ["./src/presentation"],
+            "@features/*": ["./src/features/*"]
         }
     },
     "include": ["src/**/*", "**/*.ts", "**/*.tsx"],
