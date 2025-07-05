@@ -1,3 +1,5 @@
-import base from '@uplox/prettier-config/base';
+import base from '@uplox/prettier-config';
 
-export default base;
+export default {
+    ...base,
+};

@@ -44,16 +44,6 @@ RUN pnpm install --prod --frozen-lockfile \
 # Production Stage
 FROM node:24-alpine AS production
 
-# Install base system dependencies
-RUN apk add --no-cache --virtual .build-deps \
-        curl \
-        wget \
-    && apk add --no-cache \
-        tini \
-    && apk del .build-deps \
-    && rm -rf /var/cache/apk/* \
-    && rm -rf /tmp/*
-
 # Create app user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
@@ -80,9 +70,6 @@ EXPOSE 3000
 # Health check (lightweight)
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
-
-# Use tini as PID 1 for proper signal handling
-ENTRYPOINT ["tini", "--"]
 
 # Start the application
 CMD ["node", "apps/uplox/dist/index.js"]

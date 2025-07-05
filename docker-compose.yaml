@@ -4,8 +4,8 @@ services:
   uplox:
     build:
       context: .
-      dockerfile: apps/uplox/Dockerfile.local
-    image: uplox-local:latest
+      dockerfile: apps/uplox/Dockerfile.dev
+    image: uplox-dev:latest
     container_name: uplox-uplox
     ports:
       - "3000:3000"
@@ -35,8 +35,8 @@ services:
   scanner:
     build:
       context: .
-      dockerfile: apps/scanner/Dockerfile.local
-    image: scanner-local:latest
+      dockerfile: apps/scanner/Dockerfile.dev
+    image: scanner-dev:latest
     container_name: uplox-scanner
     ports:
       - "3310:3310"

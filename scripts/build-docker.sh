@@ -63,13 +63,13 @@ echo
 # Build each Docker image
 SUCCESS_COUNT=0
 TOTAL_COUNT=${#DOCKERFILE_DIRS[@]}
-IS_LOCAL=${1:-false}
+IS_DEV=${1:-false}
 
 for dockerfile_dir in "${DOCKERFILE_DIRS[@]}"; do
     # Extract image name from directory path (e.g., apps/uplox -> uplox)
     image_name=$(basename "$dockerfile_dir")
-    if [ "$IS_LOCAL" = "true" ]; then
-        image_name="$image_name-local"
+    if [ "$IS_DEV" = "true" ]; then
+        image_name="$image_name-dev"
     else
         image_name="$image_name"
     fi
@@ -79,8 +79,8 @@ for dockerfile_dir in "${DOCKERFILE_DIRS[@]}"; do
     print_info "Dockerfile: $dockerfile_path"
 
     dockerfile_path="$dockerfile_dir/Dockerfile"
-    if [ "$IS_LOCAL" = "true" ]; then
-        dockerfile_path="$dockerfile_dir/Dockerfile.local"
+    if [ "$IS_DEV" = "true" ]; then
+        dockerfile_path="$dockerfile_dir/Dockerfile.dev"
     fi
     
     # Build the Docker image with repo root as context and specify Dockerfile location

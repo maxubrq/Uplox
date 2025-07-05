@@ -1,25 +1,62 @@
 {
     "compilerOptions": {
-        "target": "ESNext",
+        /* Language and Environment */
+        "target": "ES2022",
+        "lib": ["ES2022"],
         "module": "ESNext",
         "moduleResolution": "bundler",
-        "strict": true,
-        "skipLibCheck": true,
-        "types": ["node"],
-        "jsx": "react-jsx",
-        "jsxImportSource": "hono/jsx",
+        "allowJs": true,
+        "checkJs": false,
+
+        /* Bundler mode */
+        "moduleDetection": "force",
+        "allowImportingTsExtensions": false,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noEmit": false,
         "outDir": "./dist",
+
+        /* Linting */
+        "strict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "noImplicitOverride": true,
+        "allowUnusedLabels": false,
+        "allowUnreachableCode": false,
+
+        /* Interop Constraints */
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "forceConsistentCasingInFileNames": true,
+        "verbatimModuleSyntax": false,
+
+        /* Type Checking */
+        "skipLibCheck": true,
+        "declaration": true,
+        "declarationMap": true,
+        "sourceMap": true,
+
+        /* Path Mapping */
+        "baseUrl": "./",
         "paths": {
-            "@presign/*": ["./src/presign/*"],
-            "@presign": ["./src/presign"],
+            "@/*": ["./src/*"],
             "@domain/*": ["./src/domain/*"],
-            "@domain": ["./src/domain"],
             "@shared/*": ["./src/shared/*"],
-            "@shared": ["./src/shared"],
-            "@application/*": ["./src/application/*"],
-            "@application": ["./src/application"],
-            "@/*": ["./src/*"]
+            "@application/*": ["./src/application/*"]
         }
     },
-    "exclude": ["node_modules"]
+    "include": ["src/**/*", "**/*.ts", "**/*.tsx"],
+    "exclude": [
+        "node_modules",
+        "dist",
+        "coverage",
+        "**/*.spec.ts",
+        "**/*.test.ts",
+        "**/__tests__/**",
+        "**/__mocks__/**"
+    ]
 }
