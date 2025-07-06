@@ -1,8 +1,0 @@
-[error ] [uplox] [UploxAppImpl] Failed to start the server {
-  "error": {
-    "address": "::1",
-    "family": "IPv6",
-    "port": 3000
-  },
-  "timestamp": "2025-07-05T04:56:48.154Z"
-}
