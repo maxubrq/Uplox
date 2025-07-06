@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   uplox:
     build:
@@ -59,13 +57,12 @@ services:
       - uplox-network
 
   cache:
-    image: redis:7-alpine
+    image: redis/redis-stack:7.2.0-v17
     container_name: uplox-cache
     ports:
       - "6379:6379"
     volumes:
       - ./infra/cache:/data
-    command: redis-server --appendonly yes
     networks:
       - uplox-network
 
