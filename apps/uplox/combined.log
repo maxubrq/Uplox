@@ -375,3 +375,121 @@
 [info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
   "timestamp": "2025-07-06T02:13:32.622Z"
 }
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T02:18:28.322Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T02:18:28.324Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_aUGPJfKthojo1TzTwycxxF",
+  "fileId": "file_s9ZwAyvCJ4dLxZg649LuVC",
+  "hashes": {
+    "sha256": "e14d2e5bdc85ed1cb133ff74b36a3eab78aa6fbf32802d25c7675740d6e2db68"
+  },
+  "fileType": {
+    "ext": "zip",
+    "mime": "application/zip"
+  },
+  "scanResult": {
+    "version": "ClamAV 1.2.2/27690/Sat Jul  5 08:40:26 2025\n",
+    "result": {
+      "isInfected": false,
+      "viruses": [],
+      "file": null,
+      "resultString": "stream: OK\u0000",
+      "timeout": false
+    }
+  },
+  "timestamp": "2025-07-06T02:18:51.717Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_piEWc8bLh9RhtTfAAX4C6d",
+  "fileId": "file_u1aRZ6H2GbJBR7pcS8TGda",
+  "hashes": {
+    "sha256": "7fe0b30ed0f66f3eec2a102cd5917dd6b7e3b52a7512a7783680d99141d7d1ba"
+  },
+  "fileType": {
+    "ext": "heic",
+    "mime": "image/heic"
+  },
+  "scanResult": {
+    "version": "ClamAV 1.2.2/27690/Sat Jul  5 08:40:26 2025\n",
+    "result": {
+      "isInfected": false,
+      "viruses": [],
+      "file": null,
+      "resultString": "stream: OK\u0000",
+      "timeout": false
+    }
+  },
+  "timestamp": "2025-07-06T02:19:09.801Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_k4T9B4Mm38PSMUGthke2Sz",
+  "fileId": "file_u4SRuSvNW7puedyLyzxH5V",
+  "hashes": {
+    "sha256": "7fe0b30ed0f66f3eec2a102cd5917dd6b7e3b52a7512a7783680d99141d7d1ba"
+  },
+  "fileType": {
+    "ext": "heic",
+    "mime": "image/heic"
+  },
+  "scanResult": {
+    "version": "ClamAV 1.2.2/27690/Sat Jul  5 08:40:26 2025\n",
+    "result": {
+      "isInfected": false,
+      "viruses": [],
+      "file": null,
+      "resultString": "stream: OK\u0000",
+      "timeout": false
+    }
+  },
+  "timestamp": "2025-07-06T02:19:14.786Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_cgiWaDuCo6bBBYJuzo5e5a",
+  "fileId": "file_91T8HVN6zKrdqhCQkGZsnu",
+  "hashes": {
+    "sha256": "04de9123bf3523b6e9cb5d102a4ee22c74cbe23fc8c434355d3c88129b28df6a"
+  },
+  "fileType": {
+    "ext": "odt",
+    "mime": "application/vnd.oasis.opendocument.text"
+  },
+  "scanResult": {
+    "version": "ClamAV 1.2.2/27690/Sat Jul  5 08:40:26 2025\n",
+    "result": {
+      "isInfected": false,
+      "viruses": [],
+      "file": null,
+      "resultString": "stream: OK\u0000",
+      "timeout": false
+    }
+  },
+  "timestamp": "2025-07-06T02:21:31.788Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_prheu93MFeiHu9LqjwyhkA",
+  "fileId": "file_1JNsApAjbPTfVkz2zK3AWa",
+  "hashes": {
+    "sha256": "c884dea7216ea3698c5c6e16106c321fe02316a3078f49fa9ded919fce9c959b"
+  },
+  "fileType": {
+    "ext": "pdf",
+    "mime": "application/pdf"
+  },
+  "scanResult": {
+    "version": "ClamAV 1.2.2/27690/Sat Jul  5 08:40:26 2025\n",
+    "result": {
+      "isInfected": true,
+      "viruses": [
+        "Pdf.Dropper.Agent-7478802-0"
+      ],
+      "file": null,
+      "resultString": "stream: Pdf.Dropper.Agent-7478802-0 FOUND\u0000",
+      "timeout": false
+    }
+  },
+  "timestamp": "2025-07-06T02:21:40.469Z"
+}

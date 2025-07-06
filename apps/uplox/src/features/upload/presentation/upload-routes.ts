@@ -32,10 +32,7 @@ export class UploadRoutes implements UploxRoutes<Handler, Context> {
         const upbloxReadStream = UpbloxReadStream.fromWeb(fileStream);
         const hashPassThrough = upbloxReadStream.passThrough();
         const fileTypePassThrough = upbloxReadStream.passThrough();
-        const [fileHash, fileType] = await Promise.all([
-            hashStream('sha256', hashPassThrough),
-            fileTypeFromStream(Readable.toWeb(fileTypePassThrough)),
-        ]);
+        const clamscanPassThrough = upbloxReadStream.passThrough();
         const clamscan = await new NodeClam().init({
             clamdscan: {
                 host: 'scanner', // If you want to connect locally but not through socket
@@ -45,15 +42,34 @@ export class UploadRoutes implements UploxRoutes<Handler, Context> {
                 tls: false, // Connect to clamd over TLS
             },
         });
-        const clamVersion = await clamscan.getVersion();
-        console.log(clamVersion);
+        const [fileHash, fileType, clamscanResult, clamVersion] = await Promise.all([
+            hashStream('sha256', hashPassThrough),
+            fileTypeFromStream(Readable.toWeb(fileTypePassThrough)),
+            clamscan.scanStream(clamscanPassThrough),
+            clamscan.getVersion(),
+        ]);
+
+        this._logger.info(`[${this.constructor.name}] File uploaded`, {
+            requestId,
+            fileId,
+            hashes: { sha256: fileHash },
+            fileType: fileType,
+            scanResult: {
+                version: clamVersion,
+                result: clamscanResult,
+            },
+        });
+
         return c.json({
             message: 'File uploaded',
             requestId,
             fileId,
             hashes: { sha256: fileHash },
             fileType: fileType,
-            clamVersion: clamVersion,
+            scanResult: {
+                version: clamVersion,
+                result: clamscanResult,
+            },
         });
     }
 
