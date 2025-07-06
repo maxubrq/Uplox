@@ -1,16 +1,21 @@
 import { UploxApp } from '@application/app';
 import { UploxAppConfigs } from '@application/app-configs';
-import { UploxAppLogger } from '@application/app-logger';
+import type { UploxAppLogger } from '@application/app-logger';
+import { UploxAppLoggerImpl } from '@shared/logger/logger';
 import { UploxRoute } from '@application/routes';
 import { serve } from '@hono/node-server';
 import { Context, Handler, Hono } from 'hono';
 import { UploxAppEnv } from '@application/app-env';
+import { inject, injectable } from 'inversify';
+import 'reflect-metadata';
 
+@injectable()
 export class UploxAppImpl implements UploxApp<Handler<any, any, any>, Context<UploxAppEnv, any, {}>> {
     private _app: Hono<UploxAppEnv>;
 
     constructor(
         private _appConfig: UploxAppConfigs,
+        @inject(UploxAppLoggerImpl)
         private _logger: UploxAppLogger,
     ) {
         this._app = new Hono<UploxAppEnv>();

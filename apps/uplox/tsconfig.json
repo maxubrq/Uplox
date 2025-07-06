@@ -40,6 +40,10 @@
         "declarationMap": true,
         "sourceMap": true,
 
+        /* Experimental */
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+
         /* Path Mapping */
         "baseUrl": "./",
         "paths": {
