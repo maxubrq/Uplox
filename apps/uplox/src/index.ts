@@ -3,6 +3,7 @@ import { UploxAppLoggerImpl } from '@shared/logger/logger';
 import { UploxAppImpl } from '@presentation';
 import { UploadRoutes } from '@features/upload';
 import { requestIdMiddleware } from '@presentation';
+
 function bootstrap() {
     const appConfig = UploxAppConfigs.fromEnv();
     const logger = UploxAppLoggerImpl.getInstance('uplox', appConfig.logUseJson, appConfig.logLevel);
