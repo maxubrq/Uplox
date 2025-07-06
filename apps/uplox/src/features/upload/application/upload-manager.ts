@@ -1,18 +1,12 @@
-import {
-  UploxAppLogger,
-  UploxAVScanner,
-  UploxAVScanResult,
-  UploxFileTypeScanner,
-  UploxFileTypeScanResult,
-} from '@application';
-import { UpbloxReadStream } from '@infrastructure/stream';
-import { genId, hashStream } from '@shared';
+import { AppStorage, UploxAppLogger, UploxAVScanner, UploxAVScanResult, UploxFileTypeScanner } from '@application';
+import { UploxFile } from '@domain';
+import { UpbloxReadStream } from '@infrastructure';
+import { hashStream } from '@shared';
 import { UploadFileErrorHashMismatch, UploadFileErrorInfectedFile } from './errors';
 
 export type UploadFileResult = {
     fileId: string;
-    fileHash: string;
-    fileType: UploxFileTypeScanResult;
+    file: ReturnType<typeof UploxFile.prototype.toJSON>;
     avScan: UploxAVScanResult;
 };
 
@@ -21,6 +15,7 @@ export class UploadManager {
         private _logger: UploxAppLogger,
         private _fileTypeScanner: UploxFileTypeScanner,
         private _avScanner: UploxAVScanner,
+        private _storage: AppStorage,
     ) {}
 
     async uploadFile(file: File, sha256: string): Promise<UploadFileResult> {
@@ -29,7 +24,6 @@ export class UploadManager {
                 file: file.name,
             });
             await Promise.all([this._fileTypeScanner.init(), this._avScanner.init()]);
-            const fileId = genId('file');
             const fileStream = file.stream();
             const upbloxReadStream = UpbloxReadStream.fromWeb(fileStream);
             const hashPassThrough = upbloxReadStream.passThrough();
@@ -50,10 +44,18 @@ export class UploadManager {
                 throw new UploadFileErrorInfectedFile('File is infected', clamscanResult);
             }
 
+            const uploxf = UploxFile.fromFile(file, fileHash);
+            uploxf.setHashes({
+                sha256: fileHash,
+            });
+            uploxf.setMimeType(fileType.mimeType);
+            uploxf.setExtension(fileType.extension);
+
+            await this._storage.uploadFile(uploxf);
+
             return {
-                fileId,
-                fileHash,
-                fileType,
+                fileId: uploxf.id,
+                file: uploxf.toJSON(),
                 avScan: clamscanResult,
             };
         } catch (error) {

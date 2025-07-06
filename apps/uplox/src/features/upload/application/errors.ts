@@ -1,4 +1,4 @@
-import { UploxAVScanResult } from "@application";
+import { UploxAVScanResult } from '@application';
 
 export class UploadFileErrorHashMismatch extends Error {
     code: string = 'UPLOAD_FILE_ERROR_HASH_MISMATCH';

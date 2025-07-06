@@ -8,6 +8,7 @@ export class UploxAppConfigs {
     public readonly minioSecretKey: string;
     public readonly minioBucket: string;
     public readonly minioRegion: string;
+    public readonly minioUseSSL: boolean;
     public readonly scannerHost: string;
     public readonly scannerPort: number;
     public readonly port: number;
@@ -24,6 +25,7 @@ export class UploxAppConfigs {
         this.minioSecretKey = process.env.MINIO_SECRET_KEY || 'miniosuperadmin';
         this.minioBucket = process.env.MINIO_BUCKET || 'uplox';
         this.minioRegion = process.env.MINIO_REGION || 'us-east-1';
+        this.minioUseSSL = process.env.MINIO_USE_SSL === 'true';
         this.scannerHost = process.env.SCANNER_HOST || 'localhost';
         this.scannerPort = parseInt(process.env.SCANNER_PORT || '3310');
         this.port = parseInt(process.env.PORT || '3000');
