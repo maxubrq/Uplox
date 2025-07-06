@@ -59,3 +59,319 @@
   "requestId": "req_37nFZc28mL3Aah7ParzGQV",
   "timestamp": "2025-07-05T05:07:47.949Z"
 }
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:07:05.289Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:07:05.293Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:07:40.128Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:07:40.130Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:11:46.447Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:11:46.449Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:11:48.794Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:11:48.796Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:11:54.914Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:11:54.916Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:12:32.113Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:12:32.115Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:14:09.762Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:14:09.764Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:15:20.360Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:15:20.362Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:15:42.262Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:15:42.264Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:16:11.807Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:16:11.809Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:16:23.128Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:16:23.130Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:16:28.004Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:16:28.006Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:17:28.986Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:17:28.988Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:18:19.847Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:18:19.849Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:18:50.747Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:18:50.749Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_j5GWGQjp8VHYQSEqNPTwKM",
+  "fileId": "file_hDCt8txnZ71F568wEsLA7q",
+  "timestamp": "2025-07-06T01:18:55.150Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:19:56.682Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:19:56.684Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:20:46.258Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:20:46.260Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:22:24.304Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:22:24.306Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:22:31.096Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:22:31.099Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:31:13.092Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:31:13.097Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_bykwuLnR44DmvNZpSVRPos",
+  "fileId": "file_wYS9DPZHuPuwMgFH8X66mq",
+  "timestamp": "2025-07-06T01:31:15.291Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:31:32.790Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:31:32.793Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:32:55.566Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:32:55.568Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:36:12.252Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:36:12.255Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:36:16.478Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:36:16.480Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:36:41.104Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:36:41.107Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:36:57.304Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:36:57.307Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:37:20.909Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:37:20.911Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:38:08.764Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:38:08.766Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:38:36.667Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:38:36.669Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:39:33.210Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:39:33.212Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:42:15.382Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:42:15.384Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:43:16.110Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:43:16.113Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:44:08.340Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:44:08.343Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:44:13.399Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:44:13.402Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:45:35.479Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:45:35.483Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:45:56.998Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:45:57.000Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:46:17.261Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:46:17.263Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:48:38.165Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:48:38.167Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:49:16.186Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:49:16.189Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:50:34.257Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:50:34.259Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:55:17.444Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:55:17.446Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:57:46.973Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:57:46.975Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:57:49.895Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:57:49.897Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T01:58:14.991Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T01:58:14.993Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T02:01:00.759Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T02:01:00.761Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T02:04:59.298Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T02:04:59.300Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T02:05:33.416Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T02:05:33.419Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T02:06:43.992Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T02:06:43.994Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T02:07:52.004Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T02:07:52.006Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T02:08:27.915Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T02:08:27.917Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T02:13:32.620Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T02:13:32.622Z"
+}

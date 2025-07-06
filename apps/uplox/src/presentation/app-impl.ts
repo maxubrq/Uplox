@@ -7,7 +7,7 @@ import { Context, Handler, Hono } from 'hono';
 import { UploxAppEnv } from '@application/app-env';
 
 export class UploxAppImpl implements UploxApp<Handler<any, any, any>, Context<UploxAppEnv, any, {}>> {
-    private _app: Hono<UploxAppEnv>;    
+    private _app: Hono<UploxAppEnv>;
 
     constructor(
         private _appConfig: UploxAppConfigs,

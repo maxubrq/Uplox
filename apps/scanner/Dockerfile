@@ -8,6 +8,8 @@ RUN apk add --no-cache \
     freshclam \
     wget \
     curl \
+    bash \
+    netcat-openbsd \
     && mkdir -p /var/run/clamav \
     && mkdir -p /var/log/clamav \
     && mkdir -p /var/lib/clamav
@@ -34,8 +36,16 @@ RUN if [ ! -f /var/lib/clamav/daily.cvd ]; then \
         freshclam; \
     fi || true
 
+# Copy startup script
+COPY apps/scanner/scripts/scanner-monitor.sh /usr/local/bin/start-clamav.sh
+RUN chmod +x /usr/local/bin/start-clamav.sh
+
 # Expose ClamAV daemon port
 EXPOSE 3310
 
-# Start ClamAV daemon
-CMD ["clamd", "-c", "/etc/clamav/clamd.conf"]
+# Add health check to ensure daemon is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD nc -z localhost 3310 || exit 1
+
+# Start ClamAV daemon using the startup script
+CMD ["/usr/local/bin/start-clamav.sh"]

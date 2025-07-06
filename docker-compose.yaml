@@ -42,11 +42,6 @@ services:
       - ./infra/scanner/clamav:/var/lib/clamav
       - ./apps/scanner/sample/sample.txt:/var/lib/clamav/sample.txt
       - ./apps/scanner/config/clamav_conf.conf:/etc/clamav/clamd.conf
-      - ./apps/scanner/config/clamd.ctl:/var/run/clamav/clamd.ctl
-    command: |
-      freshclam &&
-      clamd -c /etc/clamav/clamd.conf &&
-      clamdscan --config-file=/etc/clamav/clamd.conf /var/lib/clamav/sample.txt
     healthcheck:
       test: ["CMD-SHELL", "timeout 5s bash -c '</dev/tcp/localhost/3310' || exit 1"]
       interval: 5s
