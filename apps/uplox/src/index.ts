@@ -1,16 +1,27 @@
 import { UploxAppConfigs } from '@application/app-configs';
-import { UploxAppLoggerImpl } from '@shared/logger/logger';
-import { UploxAppImpl } from '@presentation';
 import { UploadRoutes } from '@features/upload';
-import { requestIdMiddleware } from '@presentation';
+import { UploadManager } from '@features/upload/application';
+import { ClamAVScanner, FileTypeScanner } from '@infrastructure';
+import { requestIdMiddleware, UploxAppImpl } from '@presentation';
+import { UploxAppLoggerImpl } from '@shared';
 
 function bootstrap() {
+    // 1. Load app configs
     const appConfig = UploxAppConfigs.fromEnv();
     const logger = UploxAppLoggerImpl.getInstance('uplox', appConfig.logUseJson, appConfig.logLevel);
+
+    // 2. Create app
     const app = new UploxAppImpl(appConfig, logger);
     app.use(requestIdMiddleware);
-    const uploadRoutes = new UploadRoutes(logger);
+
+    // 3. Upload routes & inject dependencies
+    const fileTypeScanner = FileTypeScanner.getInstance(logger);
+    const clamscan = ClamAVScanner.getInstance(logger);
+    const uploadManager = new UploadManager(logger, fileTypeScanner, clamscan);
+    const uploadRoutes = new UploadRoutes(logger, uploadManager);
     uploadRoutes.attachRoutes(app);
+
+    // 4. Start app
     app.start();
 }
 

@@ -47,18 +47,18 @@
         /* Path Mapping */
         "baseUrl": "./",
         "paths": {
-            "@domain/*": ["./src/domain/*"],
             "@domain": ["./src/domain"],
-            "@shared/*": ["./src/shared/*"],
+            "@domain/*": ["./src/domain/*"],
             "@shared": ["./src/shared"],
-            "@application/*": ["./src/application/*"],
+            "@shared/*": ["./src/shared/*"],
             "@application": ["./src/application"],
-            "@presentation/*": ["./src/presentation/*"],
+            "@application/*": ["./src/application/*"],
             "@presentation": ["./src/presentation"],
-            "@features/*": ["./src/features/*"],
+            "@presentation/*": ["./src/presentation/*"],
             "@features": ["./src/features"],
-            "@infrastructure/*": ["./src/infrastructure/*"],
+            "@features/*": ["./src/features/*"],
             "@infrastructure": ["./src/infrastructure"],
+            "@infrastructure/*": ["./src/infrastructure/*"],
             "@/*": ["./src/*"]
         }
     },
