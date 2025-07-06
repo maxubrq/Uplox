@@ -151,15 +151,13 @@ jobs:
       id: build
       run: |
         chmod +x scripts/build-docker.sh
-        ./scripts/build-docker.sh true
+        ./scripts/build-docker.sh
         
         # Get all built images dynamically by matching what the build script actually creates
-        # The build script builds images with their original names when INCLUDE_CLAMAV=true
         BUILT_IMAGES=()
         while IFS= read -r -d '' dockerfile_path; do
           dockerfile_dir=$(dirname "$dockerfile_path")
           image_name=$(basename "$dockerfile_dir")
-          # When INCLUDE_CLAMAV=true, the build script uses the original name
           BUILT_IMAGES+=("$image_name")
         done < <(find apps -name "Dockerfile" -type f -print0)
         
@@ -180,7 +178,6 @@ jobs:
         echo "images=$IMAGES_JSON" >> $GITHUB_OUTPUT
         echo "Built images JSON: $IMAGES_JSON"
         
-        # Tag the first image for security scanning (backward compatibility)
         if [ ${#BUILT_IMAGES[@]} -gt 0 ]; then
           docker tag "${BUILT_IMAGES[0]}:latest" "${BUILT_IMAGES[0]}:scan"
           echo "scan-image=${BUILT_IMAGES[0]}" >> $GITHUB_OUTPUT
