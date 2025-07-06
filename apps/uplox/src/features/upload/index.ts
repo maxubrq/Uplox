@@ -1,1 +1,1 @@
-export * from './presentation/upload-routes';
+export * from './presentation';

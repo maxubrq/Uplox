@@ -45,11 +45,17 @@
         "paths": {
             "@/*": ["./src/*"],
             "@domain/*": ["./src/domain/*"],
+            "@domain": ["./src/domain"],
             "@shared/*": ["./src/shared/*"],
+            "@shared": ["./src/shared"],
             "@application/*": ["./src/application/*"],
+            "@application": ["./src/application"],
             "@presentation/*": ["./src/presentation/*"],
             "@presentation": ["./src/presentation"],
-            "@features/*": ["./src/features/*"]
+            "@features/*": ["./src/features/*"],
+            "@features": ["./src/features"],
+            "@infrastructure/*": ["./src/infrastructure/*"],
+            "@infrastructure": ["./src/infrastructure"]
         }
     },
     "include": ["src/**/*", "**/*.ts", "**/*.tsx"],

@@ -493,3 +493,63 @@
   },
   "timestamp": "2025-07-06T02:21:40.469Z"
 }
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T03:38:08.494Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T03:38:08.496Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_8Hp16PJ8WtsiGG9z2RdNqn",
+  "fileId": "file_9658MQNF84pPvECKm1CCc2",
+  "hashes": {
+    "sha256": "c884dea7216ea3698c5c6e16106c321fe02316a3078f49fa9ded919fce9c959b"
+  },
+  "fileType": {
+    "ext": "pdf",
+    "mime": "application/pdf"
+  },
+  "scanResult": {
+    "version": "ClamAV 1.2.2/27690/Sat Jul  5 08:40:26 2025\n",
+    "result": {
+      "isInfected": true,
+      "viruses": [
+        "Pdf.Dropper.Agent-7478802-0"
+      ],
+      "file": null,
+      "resultString": "stream: Pdf.Dropper.Agent-7478802-0 FOUND\u0000",
+      "timeout": false
+    }
+  },
+  "timestamp": "2025-07-06T03:38:23.967Z"
+}
+[info  ] [uplox] [UploadRoutes] Attached route POST /files/upload {
+  "timestamp": "2025-07-06T03:44:47.784Z"
+}
+[info  ] [uplox] [UploxAppImpl] Server is running on port 3000 {
+  "timestamp": "2025-07-06T03:44:47.786Z"
+}
+[info  ] [uplox] [UploadRoutes] File uploaded {
+  "requestId": "req_rFmW6eQF9N8mG99gEvjSKw",
+  "fileId": "file_8rKw8U3u9WqK9wa1LGjB3K",
+  "hashes": {
+    "sha256": "c884dea7216ea3698c5c6e16106c321fe02316a3078f49fa9ded919fce9c959b"
+  },
+  "fileType": {
+    "ext": "pdf",
+    "mime": "application/pdf"
+  },
+  "scanResult": {
+    "version": "ClamAV 1.2.2/27690/Sat Jul  5 08:40:26 2025\n",
+    "result": {
+      "isInfected": true,
+      "viruses": [
+        "Pdf.Dropper.Agent-7478802-0"
+      ],
+      "file": null,
+      "resultString": "stream: Pdf.Dropper.Agent-7478802-0 FOUND\u0000",
+      "timeout": false
+    }
+  },
+  "timestamp": "2025-07-06T03:45:01.309Z"
+}
