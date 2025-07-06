@@ -32,6 +32,18 @@ export class UploxAppLoggerImpl implements UploxAppLogger {
         });
     }
 
+    public get appName(): string {
+        return this._name;
+    }
+
+    public get isUseJson(): boolean {
+        return this._useJson;
+    }
+
+    public get level(): string {
+        return this._level;
+    }
+
     static getInstance(name: string, useJson: boolean = false, level: string = 'info'): UploxAppLogger {
         return new UploxAppLoggerImpl(name, useJson, level);
     }

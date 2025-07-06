@@ -7,15 +7,13 @@ import { Context, Handler, Hono } from 'hono';
 import { UploxAppEnv } from '@application/app-env';
 
 export class UploxAppImpl implements UploxApp<Handler<any, any, any>, Context<UploxAppEnv, any, {}>> {
-    private _app: Hono<UploxAppEnv>;
-    private _port: number;
+    private _app: Hono<UploxAppEnv>;    
 
     constructor(
         private _appConfig: UploxAppConfigs,
         private _logger: UploxAppLogger,
     ) {
         this._app = new Hono<UploxAppEnv>();
-        this._port = _appConfig.port;
     }
 
     public attachRoute(route: UploxRoute<Handler>): void {
