@@ -6,7 +6,7 @@ export class UploxAppImpl implements UploxApp<Handler<any, any, any>, Context<Up
     private _app: Hono<UploxAppEnv>;
 
     constructor(
-        private _appConfig: UploxAppConfigs,    
+        private _appConfig: UploxAppConfigs,
         private _logger: UploxAppLogger,
     ) {
         this._app = new Hono<UploxAppEnv>();

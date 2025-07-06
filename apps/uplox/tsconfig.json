@@ -47,7 +47,6 @@
         /* Path Mapping */
         "baseUrl": "./",
         "paths": {
-            "@/*": ["./src/*"],
             "@domain/*": ["./src/domain/*"],
             "@domain": ["./src/domain"],
             "@shared/*": ["./src/shared/*"],
@@ -59,7 +58,8 @@
             "@features/*": ["./src/features/*"],
             "@features": ["./src/features"],
             "@infrastructure/*": ["./src/infrastructure/*"],
-            "@infrastructure": ["./src/infrastructure"]
+            "@infrastructure": ["./src/infrastructure"],
+            "@/*": ["./src/*"]
         }
     },
     "include": ["src/**/*", "**/*.ts", "**/*.tsx"],

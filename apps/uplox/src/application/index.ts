@@ -3,3 +3,5 @@ export * from './app';
 export * from './app-configs';
 export * from './app-env';
 export * from './app-logger';
+export * from './app-av-scanner';
+export * from './app-filetype-scanner';
