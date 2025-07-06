@@ -1,10 +1,7 @@
 import { UploxAppLogger } from "@application/app-logger";
 import { createLogger, format, Logger, transports } from "winston";
 import { customConsoleFormat, customFileFormat } from "./logger-utils";
-import { injectable } from "inversify";
-import "reflect-metadata";
 
-@injectable()
 export class UploxAppLoggerImpl implements UploxAppLogger {
   private _logger: Logger;
 
