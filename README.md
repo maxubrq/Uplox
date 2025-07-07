@@ -56,14 +56,21 @@ npm run dev            # hot-reload
 
 ```mermaid
 flowchart LR
-  client((Client)) -- POST /presign --> api(API Service)
-  client -- PUT --> s3[(S3 / MinIO)]
-  api --> clam[ClamAV scanner]
-  clam --> s3
+  client((Client)) -- POST /file/upload --> api(API Service)
+  api --> av[AV Scanner: ClamAV]
   api --> prom(Prometheus)
-  subgraph Container
+  api --> storage[storage: s3/minio]
+  api --> cache[cache: redis]
+  subgraph Main
     api
-    clam
+    storage
+    av
+  end
+  subgraph Data
+    cache
+  end
+  subgraph Metrics/Telemetry
+    prom
   end
 ```
 
