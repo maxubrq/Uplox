@@ -1,5 +1,5 @@
 # Use Alpine Linux for smaller, more secure container
-FROM alpine:3.19
+FROM alpine:3.22
 
 # Install ClamAV and dependencies
 RUN apk add --no-cache \
