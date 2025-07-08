@@ -1,9 +1,9 @@
 import {
-  UploxAppLogger,
-  UploxAVScanner,
-  UploxAVScanResult,
-  UploxFileTypeScanner,
-  UploxFileTypeScanResult,
+    UploxAppLogger,
+    UploxAVScanner,
+    UploxAVScanResult,
+    UploxFileTypeScanner,
+    UploxFileTypeScanResult,
 } from '@application';
 import { UpbloxReadStream } from '@infrastructure/stream';
 import { genId, hashStream } from '@shared';
