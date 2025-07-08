@@ -23,7 +23,6 @@ services:
       - SCANNER_HOST=scanner
       - SCANNER_PORT=3310
     depends_on:
-      - db
       - cache
       - storage
     networks:

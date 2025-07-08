@@ -2,7 +2,11 @@ import { UploxFileMetadata } from '@domain/file-metadata';
 
 export class UploxFile {
     private _metadata: UploxFileMetadata | null = null;
-    constructor(private readonly id: string) {}
+    constructor(private readonly _id: string) {}
+
+    get id() {
+        return this._id;
+    }
 
     withMetadata(metadata: UploxFileMetadata) {
         this._metadata = metadata;
@@ -11,7 +15,7 @@ export class UploxFile {
 
     toJSON() {
         return {
-            id: this.id,
+            id: this._id,
             metadata: this._metadata?.toJSON(),
         };
     }

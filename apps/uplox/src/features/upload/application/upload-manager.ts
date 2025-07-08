@@ -4,10 +4,12 @@ import {
     UploxAVScanResult,
     UploxFileTypeScanner,
     UploxFileTypeScanResult,
+    UploxStorage,
 } from '@application';
 import { UpbloxReadStream } from '@infrastructure/stream';
 import { genId, hashStream } from '@shared';
 import { UploadFileErrorHashMismatch, UploadFileErrorInfectedFile } from './errors';
+import { UploxFile } from '@domain';
 
 export type UploadFileResult = {
     fileId: string;
@@ -21,7 +23,8 @@ export class UploadManager {
         private _logger: UploxAppLogger,
         private _fileTypeScanner: UploxFileTypeScanner,
         private _avScanner: UploxAVScanner,
-    ) {}
+        private _storage: UploxStorage<UploxFile>
+    ) { }
 
     async uploadFile(file: File, sha256: string): Promise<UploadFileResult> {
         try {
@@ -49,6 +52,20 @@ export class UploadManager {
             if (clamscanResult.isInfected) {
                 throw new UploadFileErrorInfectedFile('File is infected', clamscanResult);
             }
+
+            const uploxF = UploxFile.fromJSON({
+                id: fileHash,
+                metadata: {
+                    name: file.name,
+                    size: file.size,
+                    type: fileType.mimeType,
+                    hashes: {
+                        sha256: fileHash
+                    }
+                }
+            });
+
+            await this._storage.saveFile(file, uploxF, fileHash);
 
             return {
                 fileId,
