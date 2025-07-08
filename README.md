@@ -1,12 +1,12 @@
 ## Magic Kano Model – **Uplox (Secure Upload Service)**
 
-| Category        | Feature                                                                                                                                                                                                                                                                                   | Why It Matters                                                                |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| **Must-Have**   | • HTTPS-only & HSTS<br>• Max-size + MIME & magic-byte validation<br>• Inline ClamAV / ICAP virus scan                                                                                                                                                                                     | Baseline security & compliance – service is unusable without them             |
-| **Performance** | • Zero-copy streaming to S3-compatible storage (no temp files)<br>• Presigned URL issued in ≤ 50 ms<br>• Adaptive rate-limit & back-pressure per API-key/IP                                                                                                                               | Directly affects throughput, cloud bill & user perception                     |
-| **Attractive**  | • One-time download links that self-destruct<br>• Built-in image/video preview endpoint<br>• Webhook publishing full metadata (size, SHA-256, MIME)                                                                                                                                       | Removes extra glue work and delights integrators                              |
-| **Indifferent** | • Dark-/Light-mode switch in future UI<br>• Multi-language UI strings (v1 skip)                                                                                                                                                                                                           | Adds little to core job-to-be-done for initial adopters                       |
-| **Reverse**     | • Mandatory account registration for every upload<br>• Third-party ads in free tier                                                                                                                                                                                                       | Erodes trust; lowers conversion                                               |
+| Category        | Feature                                                                                                                                                                                                                                                                                | Why It Matters                                                                |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| **Must-Have**   | • HTTPS-only & HSTS<br>• Max-size + MIME & magic-byte validation<br>• Inline ClamAV / ICAP virus scan                                                                                                                                                                                  | Baseline security & compliance – service is unusable without them             |
+| **Performance** | • Zero-copy streaming to S3-compatible storage (no temp files)<br>• Presigned URL issued in ≤ 50 ms<br>• Adaptive rate-limit & back-pressure per API-key/IP                                                                                                                            | Directly affects throughput, cloud bill & user perception                     |
+| **Attractive**  | • One-time download links that self-destruct<br>• Built-in image/video preview endpoint<br>• Webhook publishing full metadata (size, SHA-256, MIME)                                                                                                                                    | Removes extra glue work and delights integrators                              |
+| **Indifferent** | • Dark-/Light-mode switch in future UI<br>• Multi-language UI strings (v1 skip)                                                                                                                                                                                                        | Adds little to core job-to-be-done for initial adopters                       |
+| **Reverse**     | • Mandatory account registration for every upload<br>• Third-party ads in free tier                                                                                                                                                                                                    | Erodes trust; lowers conversion                                               |
 | **Magic**       | ✨ Smart Content Classifier: auto-tag _photo / document / video_ and recommend lifecycle policy<br>✨ “Clean-Room” download: re-scan + strip EXIF + deliver fresh copy in one click<br>✨ Hash-locked presign CLI: generates URL containing size & SHA-256 so S3 rejects tampered uploads | Collapses 3–4 error-prone steps into one seamless action – feels like _magic_ |
 
 ---
@@ -27,7 +27,7 @@ Born under the SEM mantra **Safe → Scale → Performance Excellent** (Levels 1
 ## ✨ Key Features
 
 | Pillar    | What You Get                                                                                                                  |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------- |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------|
 | **Safe**  | • End-to-end TLS, HSTS, CSP<br>• Virus scan before object finalises<br>• OWASP headers & rate-limit                           |
 | **Scale** | • Streaming uploader → any S3 / MinIO<br>• Stateless; ready for horizontal scaling<br>• Prometheus metrics + JSON logs (pino) |
 | **Perf**  | • Presign API < 50 ms P95<br>• Upload path zero-copy, constant memory<br>• Benchmark 1 000 RPS @ 150 ms on 512 MiB tier       |
@@ -45,7 +45,7 @@ npm run dev            # hot-reload
 ```
 
 | Method / Path   | Purpose                                             |
-| --------------- | --------------------------------------------------- |
+|-----------------|-----------------------------------------------------|
 | `POST /presign` | Returns time-bound PUT URL _(body: filename, size)_ |
 | `GET  /health`  | Liveness & readiness probes                         |
 | `GET  /metrics` | Prometheus exposition                               |
@@ -97,7 +97,7 @@ CI template already:
 ## 📊 Benchmarks & SEM Levels
 
 | Metric             | Level 1 Target         | Level 2 Target           |
-| ------------------ | ---------------------- | ------------------------ |
+|--------------------|------------------------|--------------------------|
 | Throughput (`PUT`) | 300 RPS · P95 < 250 ms | 1 000 RPS · P95 < 150 ms |
 | Test coverage      | ≥ 60 % lines           | ≥ 80 % lines + branches  |
 | Container size     | ≤ 300 MB               | ≤ 150 MB                 |
@@ -111,8 +111,8 @@ Full scripts live in `bench/` (k6).
 ## 🌱 Roadmap
 
 | Ver       | Milestone                                      | SEM Level    |
-| --------- | ---------------------------------------------- | ------------ |
-| **0.1.0** | Presign + ClamAV + Docker + CI                 | L1 pass      |
+|-----------|------------------------------------------------|--------------|
+| **0.1.0** | File + ClamAV + Docker + CI                    | L1 pass      |
 | **0.2.0** | Metrics, rate-limit, 1 k RPS load test         | L2 pass      |
 | **0.3.0** | One-time links + Clean-Room download (Magic 1) | Bridge to L3 |
 
