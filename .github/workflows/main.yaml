@@ -307,6 +307,9 @@ jobs:
         The detailed SARIF results are available in the artifacts.
         EOF
 
+    - name: Checkout again to make sure
+      uses: actions/checkout@v4
+
     - name: Update README with security badge
       if: always()
       run: |
@@ -340,7 +343,6 @@ jobs:
       run: |
         git config --global user.name 'github-actions[bot]'
         git config --global user.email 'github-actions[bot]@users.noreply.github.com'        
-        git pull --rebase
         
         if git diff --quiet README.md; then
           echo "No changes to commit for security badge"
