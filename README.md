@@ -44,11 +44,11 @@ docker compose up -d   # boots app + minio + clamav
 npm run dev            # hot-reload
 ```
 
-| Method / Path   | Purpose                                             |
-|-----------------|-----------------------------------------------------|
-| `POST /presign` | Returns time-bound PUT URL _(body: filename, size)_ |
-| `GET  /health`  | Liveness & readiness probes                         |
-| `GET  /metrics` | Prometheus exposition                               |
+| Method / Path   | Purpose                                    |
+|-----------------|--------------------------------------------|
+| `POST /file`    | Entrypoint for uploading/downloading file_ |
+| `GET  /health`  | Liveness & readiness probes                |
+| `GET  /metrics` | Prometheus exposition                      |
 
 ---
 
@@ -76,6 +76,12 @@ flowchart LR
 
 - **zod** for all input; errors → RFC 9457 problem-details.
 - S3 event or cron can trigger worker to run ✨ Magic Classifier.
+
+---
+
+## 🤔 Architecture Decision Log
+
+[ADL](./docs/ADL.md)
 
 ---
 
