@@ -134,4 +134,8 @@ Apache-2.0 — fork, hack, ship securely.
 
 ---
 
+![Test](./demo.svg)
+
+---
+
 **Uplox** lets your product say “yes” to file uploads without losing sleep over safety, scale or speed. Ready to plug it in? **Clone & deploy today!**
