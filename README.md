@@ -12,7 +12,7 @@
 ---
 
 # Uplox · Secure Upload API in TypeScript 🚀
-![Coverage](https://img.shields.io/badge/coverage-23.97%25-red) ![Tests](https://img.shields.io/badge/tests-passed-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-8.23%25-red) ![Tests](https://img.shields.io/badge/tests-passed-brightgreen)
 ![Security](https://img.shields.io/badge/security-2%20medium-yellow)
 
 > **Upload once. Trust always.**
