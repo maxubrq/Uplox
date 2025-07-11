@@ -1,4 +1,4 @@
-import { UploxFile } from "@domain";
+import { UploxFile } from '@domain';
 
 export interface AppStorage {
     init(): Promise<void>;

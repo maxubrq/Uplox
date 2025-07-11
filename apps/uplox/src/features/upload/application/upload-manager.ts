@@ -1,15 +1,8 @@
-import {
-    UploxAppLogger,
-    UploxAVScanner,
-    UploxAVScanResult,
-    UploxFileTypeScanner,
-    UploxFileTypeScanResult,
-    UploxStorage,
-} from '@application';
-import { UpbloxReadStream } from '@infrastructure/stream';
-import { genId, hashStream } from '@shared';
-import { UploadFileErrorHashMismatch, UploadFileErrorInfectedFile } from './errors';
+import { UploxAppLogger, UploxAVScanner, UploxAVScanResult, UploxFileTypeScanner, UploxFileTypeScanResult, UploxStorage } from '@application';
 import { UploxFile } from '@domain';
+import { UpbloxReadStream } from '@infrastructure/stream';
+import { hashStream } from '@shared';
+import { UploadFileErrorHashMismatch, UploadFileErrorInfectedFile } from './errors';
 
 export type UploadFileResult = {
     fileId: string;
@@ -22,30 +15,59 @@ export class UploadManager {
         private _logger: UploxAppLogger,
         private _fileTypeScanner: UploxFileTypeScanner,
         private _avScanner: UploxAVScanner,
-        private _storage: UploxStorage<UploxFile>
-    ) { }
+        private _storage: UploxStorage<UploxFile>,
+    ) {
+    }
+
+    private _scannersInitialized = false;
+
+    async init(): Promise<void> {
+        try {
+            if (!this._scannersInitialized) {
+                await Promise.all([this._fileTypeScanner.init(), this._avScanner.init()]);
+            }
+        } catch (err) {
+            this._logger.error(`[${this.constructor.name}] Error when initialize scanners`, {
+                error: err,
+            });
+        }
+    }
+
+    private async logWrap<T>(stepName: string, exec: () => Promise<T>): Promise<T> {
+        this._logger.debug(`[${this.constructor.name}] Start ${stepName}`);
+        const result = await exec();
+        this._logger.debug(`[${this.constructor.name}] End ${stepName}`);
+        return result;
+    }
 
     async uploadFile(file: File, sha256: string): Promise<UploadFileResult> {
         try {
             this._logger.info(`[${this.constructor.name}] Uploading file`, {
                 file: file.name,
             });
-            await Promise.all([this._fileTypeScanner.init(), this._avScanner.init()]);
+
+            await this.init();
+
             const fileStream = file.stream();
             const upbloxReadStream = UpbloxReadStream.fromWeb(fileStream);
             const hashPassThrough = upbloxReadStream.passThrough();
             const fileTypePassThrough = upbloxReadStream.passThrough();
             const clamscanPassThrough = upbloxReadStream.passThrough();
-            const fileHash = await hashStream('sha256', hashPassThrough);
+
+            const [fileHash, fileType, clamscanResult] = await Promise.all([
+                this.logWrap<string>('hashFile', () => hashStream('sha256', hashPassThrough)),
+                this.logWrap<UploxFileTypeScanResult>('fileTypeScanner', () => this._fileTypeScanner.scanStream(fileTypePassThrough)),
+                this.logWrap<UploxAVScanResult>('avScanner', () => this._avScanner.scanStream(clamscanPassThrough)),
+            ]);
 
             if (fileHash !== sha256) {
                 throw new UploadFileErrorHashMismatch('File hash mismatch');
             }
 
-            const [fileType, clamscanResult] = await Promise.all([
-                this._fileTypeScanner.scanStream(fileTypePassThrough),
-                this._avScanner.scanStream(clamscanPassThrough),
-            ]);
+            this._logger.debug(`[${this.constructor.name}] Scanning result`, {
+                fileType,
+                clamscanResult,
+            });
 
             if (clamscanResult.isInfected) {
                 throw new UploadFileErrorInfectedFile('File is infected', clamscanResult);
@@ -53,22 +75,21 @@ export class UploadManager {
 
             const uploxF = UploxFile.fromJSON({
                 id: fileHash,
-                metadata: {
-                    name: file.name,
-                    size: file.size,
-                    type: fileType.mimeType,
-                    hashes: {
-                        sha256: fileHash
-                    }
-                }
+                name: file.name,
+                size: file.size,
+                mimeType: fileType.mimeType,
+                extension: fileType.extension,
+                hashes: {
+                    sha256: fileHash,
+                },
             });
 
             await this._storage.saveFile(file, uploxF, fileHash);
 
             return {
-                fileId: uploxf.id,
-                file: uploxf.toJSON(),
-                avScan: clamscanResult,
+                fileId: uploxF.id,
+                file: uploxF.toJSON(),
+                avScan: clamscanResult
             };
         } catch (error) {
             if (error instanceof UploadFileErrorHashMismatch) {

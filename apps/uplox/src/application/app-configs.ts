@@ -19,7 +19,7 @@ export class UploxAppConfigs {
         this.nodeEnv = process.env.NODE_ENV || 'development';
         this.redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
         this.databaseUrl = process.env.DATABASE_URL || 'postgresql://localhost:5432/uplox';
-        this.minioEndpoint = process.env.MINIO_ENDPOINT || 'localhost:9000';
+        this.minioEndpoint = process.env.MINIO_ENDPOINT || 'storage';
         this.minioPort = parseInt(process.env.MINIO_PORT || '9000');
         this.minioAccessKey = process.env.MINIO_ACCESS_KEY || 'miniosuperadmin';
         this.minioSecretKey = process.env.MINIO_SECRET_KEY || 'miniosuperadmin';

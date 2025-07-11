@@ -19,6 +19,10 @@ export class MinioStorage implements UploxStorage<UploxFile> {
         private _bucket: string,
         private _options: MinioOptions,
     ) {
+        this._logger.debug(`[${this.constructor.name}] Starting storage with options`, {
+            ...this._options
+        });
+
         this._minioClient = new Minio.Client({
             endPoint: this._options.endpoint,
             port: this._options.port,
@@ -30,16 +34,21 @@ export class MinioStorage implements UploxStorage<UploxFile> {
     }
 
     async saveFile(file: File, metadata: UploxFile, id: string): Promise<void> {
+        this._logger.info(`[${this.constructor.name}] Start upload file`);
+
         const metadataId = await this.metadataFileName(id);
         const metadataContent = JSON.stringify(metadata.toJSON(), null, 2);
-        this._logger.info(`[${this.constructor.name}] Uploading files`, {
+
+        this._logger.debug(`[${this.constructor.name}] Uploading files`, {
             fileId: id,
             metadataId,
         });
+
         await Promise.all([
             this._minioClient.putObject(this._bucket, id, Readable.fromWeb(file.stream())),
             this._minioClient.putObject(this._bucket, metadataId, metadataContent),
         ]);
+
         this._logger.info(`[${this.constructor.name}] Done uploading files`, {
             fileId: id,
             metadataId,

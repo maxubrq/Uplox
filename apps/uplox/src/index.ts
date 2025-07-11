@@ -16,8 +16,8 @@ function bootstrap() {
         port: appConfig.minioPort,
         region: appConfig.minioRegion,
         secretKey: appConfig.minioSecretKey,
-        useSSL: false
-    })
+        useSSL: false,
+    });
 
     // 2. Create app
     const app = new UploxAppImpl(appConfig, logger);

@@ -31,8 +31,8 @@ export class UploadRoutes implements UploxRoutes<Handler, Context> {
             this._logger.info(`[${this.constructor.name}] File uploaded`, {
                 requestId,
                 fileId,
-                hashes: { sha256: result.fileHash },
-                fileType: result.fileType,
+                hashes: { ...result.file.hashes },
+                mimeType: result.file.mimeType,
                 avScan: result.avScan,
             });
 
@@ -40,8 +40,8 @@ export class UploadRoutes implements UploxRoutes<Handler, Context> {
                 message: 'File uploaded',
                 requestId,
                 fileId,
-                hashes: { sha256: result.fileHash },
-                fileType: result.fileType,
+                hashes: { ...result.file.hashes },
+                mimeType: result.file.mimeType,
                 avScan: result.avScan,
             });
         } catch (error) {

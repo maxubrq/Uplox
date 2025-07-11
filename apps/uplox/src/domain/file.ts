@@ -1,89 +1,49 @@
 export class UploxFile {
-    private _metadata: UploxFileMetadata | null = null;
-    constructor(private readonly _id: string) {}
+    constructor(
+        public id: string,
+        public name: string,
+        public size: number,
+        public mimeType?: string,
+        public extension?: string,
+        public createdAt?: Date,
+        public updatedAt?: Date,
+        public hashes?: { md5?: string; sha1?: string; sha256?: string },
+    ) {}
 
-    get id() {
-        return this._id;
-    }
+    public static fromJSON(json: any) {
+        const _id = json.id;
+        const _name = json.name;
+        const _size = json.size;
+        if (!_id || !_name || !_size) {
+            throw new Error('Invalid file JSON');
+        }
 
-    constructor(id: string, name: string, size: number) {
-        this.id = id;
-        this.name = name;
-        this.size = size;
-    }
-
-    public getExtension() {
-        return this._extension;
-    }
-
-    public getCreatedAt() {
-        return this._createdAt;
-    }
-
-    public getUpdatedAt() {
-        return this._updatedAt;
-    }
-
-    public getHashes() {
-        return this._hashes;
-    }
-
-    public getSize() {
-        return this.size;
-    }
-
-    public getMimeType() {
-        return this._mimeType;
-    }
-
-    public setMimeType(mimeType: string) {
-        this._mimeType = mimeType;
-    }
-
-    public setExtension(extension: string) {
-        this._extension = extension;
-    }
-
-    public setCreatedAt(createdAt: Date) {
-        this._createdAt = createdAt;
-    }
-
-    public setUpdatedAt(updatedAt: Date) {
-        this._updatedAt = updatedAt;
-    }
-
-    public setHashes(hashes: { md5?: string; sha1?: string; sha256?: string }) {
-        this._hashes = hashes;
+        return new UploxFile(
+            json.id,
+            json.name,
+            json.size,
+            json.mimeType,
+            json.extension,
+            json.createdAt,
+            json.updatedAt,
+            json.hashes,
+        );
     }
 
     public toJSON() {
         return {
-            id: this._id,
-            metadata: this._metadata?.toJSON(),
+            id: this.id,
+            name: this.name,
+            size: this.size,
+            mimeType: this.mimeType,
+            extension: this.extension,
+            createdAt: this.createdAt,
+            updatedAt: this.updatedAt,
+            hashes: this.hashes,
         };
     }
 
-    public static fromJSON(json: any) {
-        const file = new UploxFile(json.id, json.name, json.size);
-        file.setMimeType(json.mimeType);
-        file.setExtension(json.extension);
-        file.setCreatedAt(json.createdAt);
-        file.setUpdatedAt(json.updatedAt);
-        file.setHashes(json.hashes);
-        return file;
-    }
-
-    public setFile(file: File) {
-        this._file = file;
-    }
-
-    public getFile() {
-        return this._file;
-    }
-
-    static fromFile(file: File, id: string) {
-        const uploxf = new UploxFile(id, file.name, file.size);
-        uploxf.setFile(file);
-        return uploxf;
+    public static fromFile(file: File, id: string) {
+        return new UploxFile(id, file.name, file.size);
     }
 }

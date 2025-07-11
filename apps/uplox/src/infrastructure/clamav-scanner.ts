@@ -6,8 +6,8 @@ import { Readable } from 'stream';
 export class ClamAVScanner implements UploxAVScanner {
     private _clamav: NodeClam | null = null;
     private _initialized: boolean = false;
+    private static _version:string|undefined = undefined;
     private static _instance: ClamAVScanner | null = null;
-    private static _version: string = '1.0.0';
 
     private constructor(private _logger: UploxAppLogger) {}
 
@@ -49,10 +49,10 @@ export class ClamAVScanner implements UploxAVScanner {
 
     async init(): Promise<void> {
         if (this._clamav && this._initialized) {
-            this._logger.info('ClamAV already initialized');
+            this._logger.info('[ClamAVScanner] ClamAV already initialized');
             return;
         }
-        this._logger.info('Initializing ClamAV', {
+        this._logger.info('[ClamAVScanner] Initializing ClamAV', {
             host: 'scanner',
             port: 3310,
             timeout: MIN_MS * 5,
@@ -70,15 +70,18 @@ export class ClamAVScanner implements UploxAVScanner {
             },
         });
         this._initialized = true;
+        this._logger.info('[ClamAVScanner] ClamAV initialized');
     }
 
     async version(): Promise<string> {
         if (!this._clamav || !this._initialized) {
             throw new Error('ClamAV not initialized');
         }
-        if (ClamAVScanner._version) {
+        
+        if(ClamAVScanner._version){
             return ClamAVScanner._version;
         }
+
         const version = await this._clamav.getVersion();
         ClamAVScanner._version = version;
         return ClamAVScanner._version;
