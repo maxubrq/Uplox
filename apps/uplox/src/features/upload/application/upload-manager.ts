@@ -1,8 +1,15 @@
-import { AppStorage, UploxAppLogger, UploxAVScanner, UploxAVScanResult, UploxFileTypeScanner } from '@application';
-import { UploxFile } from '@domain';
-import { UpbloxReadStream } from '@infrastructure';
-import { hashStream } from '@shared';
+import {
+    UploxAppLogger,
+    UploxAVScanner,
+    UploxAVScanResult,
+    UploxFileTypeScanner,
+    UploxFileTypeScanResult,
+    UploxStorage,
+} from '@application';
+import { UpbloxReadStream } from '@infrastructure/stream';
+import { genId, hashStream } from '@shared';
 import { UploadFileErrorHashMismatch, UploadFileErrorInfectedFile } from './errors';
+import { UploxFile } from '@domain';
 
 export type UploadFileResult = {
     fileId: string;
@@ -15,8 +22,8 @@ export class UploadManager {
         private _logger: UploxAppLogger,
         private _fileTypeScanner: UploxFileTypeScanner,
         private _avScanner: UploxAVScanner,
-        private _storage: AppStorage,
-    ) {}
+        private _storage: UploxStorage<UploxFile>
+    ) { }
 
     async uploadFile(file: File, sha256: string): Promise<UploadFileResult> {
         try {
@@ -44,14 +51,19 @@ export class UploadManager {
                 throw new UploadFileErrorInfectedFile('File is infected', clamscanResult);
             }
 
-            const uploxf = UploxFile.fromFile(file, fileHash);
-            uploxf.setHashes({
-                sha256: fileHash,
+            const uploxF = UploxFile.fromJSON({
+                id: fileHash,
+                metadata: {
+                    name: file.name,
+                    size: file.size,
+                    type: fileType.mimeType,
+                    hashes: {
+                        sha256: fileHash
+                    }
+                }
             });
-            uploxf.setMimeType(fileType.mimeType);
-            uploxf.setExtension(fileType.extension);
 
-            await this._storage.uploadFile(uploxf);
+            await this._storage.saveFile(file, uploxF, fileHash);
 
             return {
                 fileId: uploxf.id,

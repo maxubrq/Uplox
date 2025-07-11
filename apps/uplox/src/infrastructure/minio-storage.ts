@@ -1,98 +1,69 @@
-import { AppStorage, UploxAppLogger } from "@application";
-import { UploxFile } from "@domain";
+import { UploxAppLogger, UploxStorage } from '@application';
+import { UploxFile } from '@domain';
+import { Readable } from 'stream';
 import * as Minio from 'minio';
-import { Readable } from "stream";
 
-export type MinioStorageConfig = {
+export type MinioOptions = {
     endpoint: string;
     accessKey: string;
     secretKey: string;
-    bucket: string;
-    port: number;
     useSSL: boolean;
     region: string;
-}
+    port: number;
+};
 
-export class MinioStorage implements AppStorage {
-    private static _instance: MinioStorage | null = null;
+export class MinioStorage implements UploxStorage<UploxFile> {
     private _minioClient: Minio.Client;
-
-    private constructor(private _logger: UploxAppLogger, private _config: MinioStorageConfig) {
+    constructor(
+        private _logger: UploxAppLogger,
+        private _bucket: string,
+        private _options: MinioOptions,
+    ) {
         this._minioClient = new Minio.Client({
-            endPoint: this._config.endpoint,
-            port: this._config.port,
-            useSSL: this._config.useSSL,
-            accessKey: this._config.accessKey,
-            secretKey: this._config.secretKey,
-            region: this._config.region,
+            endPoint: this._options.endpoint,
+            port: this._options.port,
+            accessKey: this._options.accessKey,
+            secretKey: this._options.secretKey,
+            useSSL: this._options.useSSL,
+            region: this._options.region,
         });
     }
 
-    init(): Promise<void> {
-        this._logger.info(`[${this.constructor.name}] Initializing Minio storage`, {
-            config: this._config,
+    async saveFile(file: File, metadata: UploxFile, id: string): Promise<void> {
+        const metadataId = await this.metadataFileName(id);
+        const metadataContent = JSON.stringify(metadata.toJSON(), null, 2);
+        this._logger.info(`[${this.constructor.name}] Uploading files`, {
+            fileId: id,
+            metadataId,
         });
-        return Promise.resolve();
-    }
-
-    static getInstance(logger: UploxAppLogger, config: MinioStorageConfig) {
-        if (!MinioStorage._instance) {
-            MinioStorage._instance = new MinioStorage(logger, config);
-        }
-        return MinioStorage._instance;
-    }
-
-    private streamFromString(string: string): Readable {
-        const stream = new Readable();
-        stream.push(string);
-        stream.push(null);
-        return stream;
-    }
-
-    public async uploadFile(file: UploxFile): Promise<void> {
-        this._logger.info(`[${this.constructor.name}] Uploading file`, {
-            file: file.id,
-        });
-        const filePath = file.id;
-        const metadataPath = `${filePath}.meta`;
-        const metadataStream = this.streamFromString(JSON.stringify(file.toJSON(), null, 2));
-        const fileReadStream = file.getFile()?.stream();
-        if (!fileReadStream) {
-            throw new Error("File stream not found");
-        }
-        const fileStream = Readable.fromWeb(fileReadStream);
         await Promise.all([
-            this._minioClient.putObject(this._config.bucket, metadataPath, metadataStream),
-            this._minioClient.putObject(this._config.bucket, filePath, fileStream),
+            this._minioClient.putObject(this._bucket, id, Readable.fromWeb(file.stream())),
+            this._minioClient.putObject(this._bucket, metadataId, metadataContent),
         ]);
-    }
-
-    public async getDownloadableUrl(fileId: string): Promise<string> {
-        this._logger.info(`[${this.constructor.name}] Getting downloadable url`, {
-            fileId,
-        });
-        const filePath = fileId;
-        const presignedUrl = await this._minioClient.presignedGetObject(this._config.bucket, filePath);
-        return presignedUrl;
-    }
-
-    private bufferFromReadable(readable: Readable): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
-            const chunks: Buffer[] = [];
-            readable.on('data', (chunk) => chunks.push(chunk));
-            readable.on('end', () => resolve(Buffer.concat(chunks)));
-            readable.on('error', reject);
+        this._logger.info(`[${this.constructor.name}] Done uploading files`, {
+            fileId: id,
+            metadataId,
         });
     }
 
-    public async getFileMetadata(fileId: string): Promise<UploxFile> {
-        this._logger.info(`[${this.constructor.name}] Getting file metadata`, {
-            fileId,
+    async saveFileStream(stream: Readable, metadata: UploxFile, id: string): Promise<void> {
+        const metadataId = await this.metadataFileName(id);
+        const metadataContent = JSON.stringify(metadata.toJSON(), null, 2);
+        this._logger.info(`[${this.constructor.name}] Uploading files`, {
+            fileId: id,
+            metadataId,
         });
-        const metadataPath = `${fileId}.meta`;
-        const metadata = await this._minioClient.getObject(this._config.bucket, metadataPath);
-        const readableToBuffer = await this.bufferFromReadable(metadata);
-        const metadataJson = JSON.parse(readableToBuffer.toString());
-        return UploxFile.fromJSON(metadataJson);
+        await Promise.all([
+            this._minioClient.putObject(this._bucket, id, stream),
+            this._minioClient.putObject(this._bucket, metadataId, metadataContent),
+        ]);
+        this._logger.info(`[${this.constructor.name}] Done uploading files`, {
+            fileId: id,
+            metadataId,
+        });
     }
-}   
+
+    async metadataFileName(originalFileName: string): Promise<string> {
+        return `${originalFileName}.meta.json`;
+    }
+}

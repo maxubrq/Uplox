@@ -14,7 +14,6 @@ services:
     environment:
       - NODE_ENV=development
       - REDIS_URL=redis://cache:6379
-      - DATABASE_URL=postgresql://postgres:password@db:5432/uplox
       - MINIO_ENDPOINT=storage
       - MINIO_PORT=9000
       - MINIO_ACCESS_KEY=miniosuperadmin
@@ -24,7 +23,6 @@ services:
       - SCANNER_HOST=scanner
       - SCANNER_PORT=3310
     depends_on:
-      - db
       - cache
       - storage
     networks:
@@ -81,20 +79,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-    networks:
-      - uplox-network
-
-  db:
-    image: postgres:15-alpine
-    container_name: uplox-db
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./infra/db:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_DB=uplox
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
     networks:
       - uplox-network
 

@@ -1,19 +1,19 @@
 ## Magic Kano Model – **Uplox (Secure Upload Service)**
 
-| Category        | Feature                                                                                                                                                                                                                                                                                   | Why It Matters                                                                |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
-| **Must-Have**   | • HTTPS-only & HSTS<br>• Max-size + MIME & magic-byte validation<br>• Inline ClamAV / ICAP virus scan                                                                                                                                                                                     | Baseline security & compliance – service is unusable without them             |
-| **Performance** | • Zero-copy streaming to S3-compatible storage (no temp files)<br>• Presigned URL issued in ≤ 50 ms<br>• Adaptive rate-limit & back-pressure per API-key/IP                                                                                                                               | Directly affects throughput, cloud bill & user perception                     |
-| **Attractive**  | • One-time download links that self-destruct<br>• Built-in image/video preview endpoint<br>• Webhook publishing full metadata (size, SHA-256, MIME)                                                                                                                                       | Removes extra glue work and delights integrators                              |
-| **Indifferent** | • Dark-/Light-mode switch in future UI<br>• Multi-language UI strings (v1 skip)                                                                                                                                                                                                           | Adds little to core job-to-be-done for initial adopters                       |
-| **Reverse**     | • Mandatory account registration for every upload<br>• Third-party ads in free tier                                                                                                                                                                                                       | Erodes trust; lowers conversion                                               |
+| Category        | Feature                                                                                                                                                                                                                                                                                | Why It Matters                                                                |
+|-----------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| **Must-Have**   | • HTTPS-only & HSTS<br>• Max-size + MIME & magic-byte validation<br>• Inline ClamAV / ICAP virus scan                                                                                                                                                                                  | Baseline security & compliance – service is unusable without them             |
+| **Performance** | • Zero-copy streaming to S3-compatible storage (no temp files)<br>• Presigned URL issued in ≤ 50 ms<br>• Adaptive rate-limit & back-pressure per API-key/IP                                                                                                                            | Directly affects throughput, cloud bill & user perception                     |
+| **Attractive**  | • One-time download links that self-destruct<br>• Built-in image/video preview endpoint<br>• Webhook publishing full metadata (size, SHA-256, MIME)                                                                                                                                    | Removes extra glue work and delights integrators                              |
+| **Indifferent** | • Dark-/Light-mode switch in future UI<br>• Multi-language UI strings (v1 skip)                                                                                                                                                                                                        | Adds little to core job-to-be-done for initial adopters                       |
+| **Reverse**     | • Mandatory account registration for every upload<br>• Third-party ads in free tier                                                                                                                                                                                                    | Erodes trust; lowers conversion                                               |
 | **Magic**       | ✨ Smart Content Classifier: auto-tag _photo / document / video_ and recommend lifecycle policy<br>✨ “Clean-Room” download: re-scan + strip EXIF + deliver fresh copy in one click<br>✨ Hash-locked presign CLI: generates URL containing size & SHA-256 so S3 rejects tampered uploads | Collapses 3–4 error-prone steps into one seamless action – feels like _magic_ |
 
 ---
 
 # Uplox · Secure Upload API in TypeScript 🚀
-![Coverage](https://img.shields.io/badge/coverage-35.77%25-red) ![Tests](https://img.shields.io/badge/tests-passed-brightgreen)
-![Security](https://img.shields.io/badge/security-scan%20failed-red)
+![Coverage](https://img.shields.io/badge/coverage-23.97%25-red) ![Tests](https://img.shields.io/badge/tests-passed-brightgreen)
+![Security](https://img.shields.io/badge/security-2%20medium-yellow)
 
 > **Upload once. Trust always.**
 
@@ -27,7 +27,7 @@ Born under the SEM mantra **Safe → Scale → Performance Excellent** (Levels 1
 ## ✨ Key Features
 
 | Pillar    | What You Get                                                                                                                  |
-| --------- | ----------------------------------------------------------------------------------------------------------------------------- |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------|
 | **Safe**  | • End-to-end TLS, HSTS, CSP<br>• Virus scan before object finalises<br>• OWASP headers & rate-limit                           |
 | **Scale** | • Streaming uploader → any S3 / MinIO<br>• Stateless; ready for horizontal scaling<br>• Prometheus metrics + JSON logs (pino) |
 | **Perf**  | • Presign API < 50 ms P95<br>• Upload path zero-copy, constant memory<br>• Benchmark 1 000 RPS @ 150 ms on 512 MiB tier       |
@@ -44,11 +44,11 @@ docker compose up -d   # boots app + minio + clamav
 npm run dev            # hot-reload
 ```
 
-| Method / Path   | Purpose                                             |
-| --------------- | --------------------------------------------------- |
-| `POST /presign` | Returns time-bound PUT URL _(body: filename, size)_ |
-| `GET  /health`  | Liveness & readiness probes                         |
-| `GET  /metrics` | Prometheus exposition                               |
+| Method / Path   | Purpose                                    |
+|-----------------|--------------------------------------------|
+| `POST /file`    | Entrypoint for uploading/downloading file_ |
+| `GET  /health`  | Liveness & readiness probes                |
+| `GET  /metrics` | Prometheus exposition                      |
 
 ---
 
@@ -56,19 +56,32 @@ npm run dev            # hot-reload
 
 ```mermaid
 flowchart LR
-  client((Client)) -- POST /presign --> api(API Service)
-  client -- PUT --> s3[(S3 / MinIO)]
-  api --> clam[ClamAV scanner]
-  clam --> s3
+  client((Client)) -- POST /file/upload --> api(API Service)
+  api --> av[AV Scanner: ClamAV]
   api --> prom(Prometheus)
-  subgraph Container
+  api --> storage[storage: s3/minio]
+  api --> cache[cache: redis]
+  subgraph Main
     api
-    clam
+    storage
+    av
+  end
+  subgraph Data
+    cache
+  end
+  subgraph Metrics/Telemetry
+    prom
   end
 ```
 
 - **zod** for all input; errors → RFC 9457 problem-details.
 - S3 event or cron can trigger worker to run ✨ Magic Classifier.
+
+---
+
+## 🤔 Architecture Decision Log
+
+[ADL](./docs/ADL.md)
 
 ---
 
@@ -90,7 +103,7 @@ CI template already:
 ## 📊 Benchmarks & SEM Levels
 
 | Metric             | Level 1 Target         | Level 2 Target           |
-| ------------------ | ---------------------- | ------------------------ |
+|--------------------|------------------------|--------------------------|
 | Throughput (`PUT`) | 300 RPS · P95 < 250 ms | 1 000 RPS · P95 < 150 ms |
 | Test coverage      | ≥ 60 % lines           | ≥ 80 % lines + branches  |
 | Container size     | ≤ 300 MB               | ≤ 150 MB                 |
@@ -104,8 +117,8 @@ Full scripts live in `bench/` (k6).
 ## 🌱 Roadmap
 
 | Ver       | Milestone                                      | SEM Level    |
-| --------- | ---------------------------------------------- | ------------ |
-| **0.1.0** | Presign + ClamAV + Docker + CI                 | L1 pass      |
+|-----------|------------------------------------------------|--------------|
+| **0.1.0** | File + ClamAV + Docker + CI                    | L1 pass      |
 | **0.2.0** | Metrics, rate-limit, 1 k RPS load test         | L2 pass      |
 | **0.3.0** | One-time links + Clean-Room download (Magic 1) | Bridge to L3 |
 
@@ -118,6 +131,10 @@ PRs welcome! Run `npm run test:cov` and keep CI green.
 ## 📝 License
 
 Apache-2.0 — fork, hack, ship securely.
+
+---
+
+![Test](./demo.svg)
 
 ---
 

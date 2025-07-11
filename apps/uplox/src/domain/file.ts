@@ -1,17 +1,10 @@
 export class UploxFile {
-    public id: string;
-    public name: string;
-    public size: number;
-    private _mimeType: string = '';
-    private _extension: string = '';
-    private _createdAt: Date | null = null;
-    private _updatedAt: Date | null = null;
-    private _file: File | null = null;
-    private _hashes: {
-        md5?: string;
-        sha1?: string;
-        sha256?: string;
-    } | null = null;
+    private _metadata: UploxFileMetadata | null = null;
+    constructor(private readonly _id: string) {}
+
+    get id() {
+        return this._id;
+    }
 
     constructor(id: string, name: string, size: number) {
         this.id = id;
@@ -65,14 +58,8 @@ export class UploxFile {
 
     public toJSON() {
         return {
-            id: this.id,
-            name: this.name,
-            size: this.size,
-            mimeType: this._mimeType,
-            extension: this._extension,
-            createdAt: this._createdAt?.toISOString() ?? null,
-            updatedAt: this._updatedAt?.toISOString() ?? null,
-            hashes: this._hashes,
+            id: this._id,
+            metadata: this._metadata?.toJSON(),
         };
     }
 
