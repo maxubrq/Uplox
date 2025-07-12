@@ -115,6 +115,26 @@ services:
     networks:
       - uplox-network
 
+  k6:
+    image: grafana/k6:latest
+    container_name: uplox-k6
+    ports:
+      - "6565:6565"
+    volumes:
+      - ./k6:/k6
+      - ./k6/results:/shared  # Mount for test results
+    environment:
+      - K6_VUS=${K6_VUS:-100}  # Default 100 VUs
+      - K6_DURATION=${K6_DURATION:-10m}  # Default 10 minutes
+      - K6_TARGET_URL=${K6_TARGET_URL:-http://uplox:3000}  # Target URL
+      - K6_DISTRIBUTED_MODE=${K6_DISTRIBUTED_MODE:-false}  # Distributed mode
+    working_dir: /k6
+    depends_on:
+      - uplox
+    command: ["run", "src/main-tests.ts"]
+    networks:
+      - uplox-network
+
 networks:
   uplox-network:
     driver: bridge

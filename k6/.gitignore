@@ -1,0 +1,30 @@
+# Build output
+dist/
+*.js
+*.js.map
+
+# Dependencies
+node_modules/
+
+# Test results
+results/
+*.json
+*.html
+*.txt
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+temp/ 

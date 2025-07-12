@@ -1,0 +1,72 @@
+# Docker Compose Override for K6 Testing
+# Usage: docker-compose -f docker-compose.yaml -f docker-compose.k6.yml up k6
+version: '3.8'
+
+services:
+  k6:
+    image: grafana/k6:latest
+    container_name: uplox-k6
+    ports:
+      - "6565:6565"
+    volumes:
+      - ./k6:/k6
+      - ./k6/results:/shared
+    environment:
+      - K6_VUS=${K6_VUS:-100}
+      - K6_DURATION=${K6_DURATION:-10m}
+      - K6_TARGET_URL=${K6_TARGET_URL:-http://uplox:3000}
+      - K6_DISTRIBUTED_MODE=${K6_DISTRIBUTED_MODE:-false}
+    working_dir: /k6
+    command: ["sh", "-c", "pnpm install && pnpm run build && pnpm run test"]
+    depends_on:
+      - uplox
+    networks:
+      - uplox-network
+  
+  # Development testing (10 VUs, 30s)
+  k6-dev:
+    extends:
+      service: k6
+    container_name: uplox-k6-dev
+    environment:
+      - K6_VUS=10
+      - K6_DURATION=30s
+      - K6_TARGET_URL=http://uplox:3000
+      - K6_DISTRIBUTED_MODE=false
+    command: ["sh", "-c", "pnpm install && pnpm run build && pnpm run test:dev"]
+  
+  # Load testing (100 VUs, 10m)
+  k6-load:
+    extends:
+      service: k6
+    container_name: uplox-k6-load
+    environment:
+      - K6_VUS=100
+      - K6_DURATION=10m
+      - K6_TARGET_URL=http://uplox:3000
+      - K6_DISTRIBUTED_MODE=false
+    command: ["sh", "-c", "pnpm install && pnpm run build && pnpm run test:load"]
+  
+  # Stress testing (1000 VUs, 10m)
+  k6-stress:
+    extends:
+      service: k6
+    container_name: uplox-k6-stress
+    environment:
+      - K6_VUS=1000
+      - K6_DURATION=10m
+      - K6_TARGET_URL=http://uplox:3000
+      - K6_DISTRIBUTED_MODE=false
+    command: ["sh", "-c", "pnpm install && pnpm run build && pnpm run test:stress"]
+  
+  # Distributed testing (configurable VUs with ramping)
+  k6-distributed:
+    extends:
+      service: k6
+    container_name: uplox-k6-distributed
+    environment:
+      - K6_VUS=${K6_VUS:-500}
+      - K6_DURATION=${K6_DURATION:-10m}
+      - K6_TARGET_URL=http://uplox:3000
+      - K6_DISTRIBUTED_MODE=true
+    command: ["sh", "-c", "pnpm install && pnpm run build && pnpm run test:distributed"] 
