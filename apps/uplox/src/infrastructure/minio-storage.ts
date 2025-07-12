@@ -20,7 +20,7 @@ export class MinioStorage implements UploxStorage<UploxFile> {
         private _options: MinioOptions,
     ) {
         this._logger.debug(`[${this.constructor.name}] Starting storage with options`, {
-            ...this._options
+            ...this._options,
         });
 
         this._minioClient = new Minio.Client({
@@ -31,6 +31,10 @@ export class MinioStorage implements UploxStorage<UploxFile> {
             useSSL: this._options.useSSL,
             region: this._options.region,
         });
+    }
+
+    getBucket(): string {
+        return this._bucket;
     }
 
     async saveFile(file: File, metadata: UploxFile, id: string): Promise<void> {

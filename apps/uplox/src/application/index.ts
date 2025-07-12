@@ -5,4 +5,5 @@ export * from './app-env';
 export * from './app-logger';
 export * from './app-av-scanner';
 export * from './app-filetype-scanner';
-export * from './app-strorage';
+export * from './app-storage';
+export * from './app-metric';

@@ -1,8 +1,8 @@
-import { UploxFile } from '@domain';
+import { Readable } from 'stream';
 
-export interface AppStorage {
-    init(): Promise<void>;
-    uploadFile(file: UploxFile): Promise<void>;
-    getDownloadableUrl(fileId: string): Promise<string>;
-    getFileMetadata(fileId: string): Promise<UploxFile>;
+export interface UploxStorage<T> {
+    saveFile(file: File, metadata: T, id: string): Promise<void>;
+    saveFileStream(stream: Readable, metadata: T, id: string): Promise<void>;
+    metadataFileName(originalFileName: string): Promise<string>;
+    getBucket(): string;
 }

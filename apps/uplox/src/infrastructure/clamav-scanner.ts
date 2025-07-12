@@ -6,7 +6,7 @@ import { Readable } from 'stream';
 export class ClamAVScanner implements UploxAVScanner {
     private _clamav: NodeClam | null = null;
     private _initialized: boolean = false;
-    private static _version:string|undefined = undefined;
+    private static _version: string | undefined = undefined;
     private static _instance: ClamAVScanner | null = null;
 
     private constructor(private _logger: UploxAppLogger) {}
@@ -77,8 +77,8 @@ export class ClamAVScanner implements UploxAVScanner {
         if (!this._clamav || !this._initialized) {
             throw new Error('ClamAV not initialized');
         }
-        
-        if(ClamAVScanner._version){
+
+        if (ClamAVScanner._version) {
             return ClamAVScanner._version;
         }
 

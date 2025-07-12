@@ -1,4 +1,12 @@
-import { UploxAppLogger, UploxAVScanner, UploxAVScanResult, UploxFileTypeScanner, UploxFileTypeScanResult, UploxStorage } from '@application';
+import {
+    AppMetrics,
+    UploxAppLogger,
+    UploxAVScanner,
+    UploxAVScanResult,
+    UploxFileTypeScanner,
+    UploxFileTypeScanResult,
+    UploxStorage,
+} from '@application';
 import { UploxFile } from '@domain';
 import { UpbloxReadStream } from '@infrastructure/stream';
 import { hashStream } from '@shared';
@@ -16,8 +24,8 @@ export class UploadManager {
         private _fileTypeScanner: UploxFileTypeScanner,
         private _avScanner: UploxAVScanner,
         private _storage: UploxStorage<UploxFile>,
-    ) {
-    }
+        private _metrics: AppMetrics,
+    ) {}
 
     private _scannersInitialized = false;
 
@@ -40,6 +48,44 @@ export class UploadManager {
         return result;
     }
 
+    private async metricsWrap<T>(
+        stepName: 'avScan' | 'storagePut',
+        exec: () => Promise<T>,
+        ...extra: any[]
+    ): Promise<T> {
+        const startTime = Date.now();
+        const duration = Date.now() - startTime;
+        if (stepName === 'avScan') {
+            const avName = extra.length > 0 ? extra[0] : 'unknown';
+            try {
+                const result = await exec();
+                const isInfected = (result as any)?.isInfected;
+                this._metrics.avScanDurationMillis(avName, duration, isInfected ? 'infected' : 'clean');
+                if (isInfected) {
+                    const virusType = (result as any)?.viruses as string[];
+                    this._metrics.avDetectionTotal(avName, virusType.join(','));
+                }
+                return result;
+            } catch (err) {
+                this._metrics.avScanFailureTotal(avName, (err as Error).message || 'unknown');
+                throw err;
+            }
+        } else if (stepName === 'storagePut') {
+            try {
+                const result = await exec();
+                const bucket = extra.length > 0 ? extra[0] : 'unknown';
+                this._metrics.storagePutLatencyMillis(duration, bucket, 'success');
+                return result;
+            } catch (err) {
+                this._metrics.uploadErrorsTotal('StoragePut', 'PUT');
+                throw err;
+            }
+        }
+
+        const result = await exec();
+        return result;
+    }
+
     async uploadFile(file: File, sha256: string): Promise<UploadFileResult> {
         try {
             this._logger.info(`[${this.constructor.name}] Uploading file`, {
@@ -56,11 +102,20 @@ export class UploadManager {
 
             const [fileHash, fileType, clamscanResult] = await Promise.all([
                 this.logWrap<string>('hashFile', () => hashStream('sha256', hashPassThrough)),
-                this.logWrap<UploxFileTypeScanResult>('fileTypeScanner', () => this._fileTypeScanner.scanStream(fileTypePassThrough)),
-                this.logWrap<UploxAVScanResult>('avScanner', () => this._avScanner.scanStream(clamscanPassThrough)),
+                this.logWrap<UploxFileTypeScanResult>('fileTypeScanner', () =>
+                    this._fileTypeScanner.scanStream(fileTypePassThrough),
+                ),
+                this.logWrap<UploxAVScanResult>('avScan', () =>
+                    this.metricsWrap<UploxAVScanResult>(
+                        'avScan',
+                        () => this._avScanner.scanStream(clamscanPassThrough),
+                        'ClamAV',
+                    ),
+                ),
             ]);
 
             if (fileHash !== sha256) {
+                this._metrics.sha256MismatchTotal('POST');
                 throw new UploadFileErrorHashMismatch('File hash mismatch');
             }
 
@@ -84,12 +139,21 @@ export class UploadManager {
                 },
             });
 
-            await this._storage.saveFile(file, uploxF, fileHash);
+            await this.metricsWrap<void>(
+                'storagePut',
+                () => this._storage.saveFile(file, uploxF, fileHash),
+                this._storage.getBucket(),
+            );
+
+            await Promise.all([
+                this._metrics.uploadTotal(fileType.mimeType),
+                this._metrics.uploadsByMime(fileType.mimeType),
+            ]);
 
             return {
                 fileId: uploxF.id,
                 file: uploxF.toJSON(),
-                avScan: clamscanResult
+                avScan: clamscanResult,
             };
         } catch (error) {
             if (error instanceof UploadFileErrorHashMismatch) {

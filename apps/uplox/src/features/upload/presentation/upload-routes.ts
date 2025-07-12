@@ -1,4 +1,4 @@
-import { UploxApp, UploxAppLogger, UploxRoute, UploxRoutes } from '@application';
+import { AppMetrics, UploxApp, UploxAppLogger, UploxRoute, UploxRoutes } from '@application';
 import { UploadFileErrorHashMismatch, UploadFileErrorInfectedFile, UploadManager } from '@features/upload/application';
 import { genId } from '@shared';
 import { Context, Handler } from 'hono';
@@ -7,6 +7,7 @@ export class UploadRoutes implements UploxRoutes<Handler, Context> {
     constructor(
         private _logger: UploxAppLogger,
         private _uploadManager: UploadManager,
+        private _metrics: AppMetrics,
     ) {
         this._handleUploadFile = this._handleUploadFile.bind(this);
     }

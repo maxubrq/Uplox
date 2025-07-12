@@ -82,6 +82,39 @@ services:
     networks:
       - uplox-network
 
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: uplox-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus:/etc/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - uplox
+    networks:
+      - uplox-network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: uplox-grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./infra/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_USERS_AUTO_ASSIGN_ORG=true
+      - GF_USERS_AUTO_ASSIGN_ORG_ROLE=Admin
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_NAME=Main Org.
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    depends_on:
+      - prometheus
+    networks:
+      - uplox-network
+
 networks:
   uplox-network:
     driver: bridge
