@@ -2,6 +2,7 @@ import http from "k6/http";
 import { check, sleep } from "k6";
 import crypto from "k6/crypto";
 import { SharedArray } from "k6/data";
+import encoding from "k6/encoding";
 
 // Test configuration via environment variables
 const VUS = parseInt(__ENV.K6_VUS || "100");
@@ -47,21 +48,26 @@ const SAMPLE_FILES = [
 // File cache for storing file content and hashes
 const fileCache = new Map();
 
+// Pre-calculate hashes and store files as base64 encoded strings
 let sampleFiles = new SharedArray("sample_files", () => {
   const ret: {
     name: string;
-    content: any;
+    content: string; // base64 encoded content
     hash: string;
   }[] = [];
   for (const f of SAMPLE_FILES) {
     const path = `../sample_files/${f}`;
-    const fileContent = open(path);
+    const fileContent = open(path, "b");
     const sha256 = crypto.createHash("sha256");
     sha256.update(fileContent);
     const fileHash = sha256.digest("hex");
+    
+    // Encode file content as base64 for safe storage in SharedArray
+    const base64Content = encoding.b64encode(fileContent);
+    
     ret.push({
       name: f,
-      content: fileContent,
+      content: base64Content,
       hash: fileHash,
     });
   }
@@ -69,9 +75,12 @@ let sampleFiles = new SharedArray("sample_files", () => {
 });
 
 // Test file upload with real file content and hash
-function testFileUpload(fileName: string, hash: string, fileData: any): void {
+function testFileUpload(fileName: string, hash: string, base64Content: string): void {
+  // Decode base64 content back to binary
+  const fileContent = encoding.b64decode(base64Content);
+  
   const formData = {
-    file: http.file(fileData, fileName),
+    file: http.file(fileContent, fileName),
     sha256: hash,
   };
 
