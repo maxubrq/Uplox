@@ -130,7 +130,18 @@ jobs:
         else
           git add README.md
           git commit -m "Update coverage and test badges [skip ci]"
-          git push
+          
+          # Push with retry logic
+          for i in {1..3}; do
+            if git push; then
+              echo "Successfully pushed badge updates"
+              break
+            else
+              echo "Push failed, retrying in 5 seconds... (attempt $i/3)"
+              sleep 5
+              git pull origin main --rebase
+            fi
+          done
         fi
 
   build-and-security:
@@ -347,9 +358,30 @@ jobs:
         if git diff --quiet README.md; then
           echo "No changes to commit for security badge"
         else
+          # Pull latest changes to avoid conflicts
+          for i in {1..3}; do
+            if git pull origin main --rebase; then
+              break
+            else
+              echo "Pull failed, retrying in 5 seconds... (attempt $i/3)"
+              sleep 5
+            fi
+          done
+          
           git add README.md
           git commit -m "Update security badge [skip ci]"
-          git push
+          
+          # Push with retry logic
+          for i in {1..3}; do
+            if git push; then
+              echo "Successfully pushed security badge updates"
+              break
+            else
+              echo "Push failed, retrying in 5 seconds... (attempt $i/3)"
+              sleep 5
+              git pull origin main --rebase
+            fi
+          done
         fi
 
     - name: Upload security artifacts
