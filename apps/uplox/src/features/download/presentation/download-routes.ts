@@ -12,17 +12,21 @@ export class DownloadRoutes implements UploxRoutes<Handler, Context> {
 
     protected async downloadHandler(c: Context): Promise<Response> {
         const fileId = c.req.param('fileId');
-        if(!fileId){
+        if (!fileId) {
             this._logger.warn(`[${this.constructor.name}] File ID is required`);
 
-            return c.json({
-                error: {
-                    code: 'DOWNLOAD_FILE_ERROR_FILE_ID_REQUIRED',
-                }
-            }, 400);
+            return c.json(
+                {
+                    error: {
+                        code: 'DOWNLOAD_FILE_ERROR_FILE_ID_REQUIRED',
+                        message: 'File ID is required',
+                    },
+                },
+                400,
+            );
         }
 
-        try{
+        try {
             const url = await this._manager.getDownloadableUrl(fileId);
             return c.json(
                 {
@@ -32,24 +36,31 @@ export class DownloadRoutes implements UploxRoutes<Handler, Context> {
                 },
                 200,
             );
-        }catch(e){
-            if(e instanceof DownloadFileErrorFileNotFound){
-                return c.json({
-                    error: {
-                        code: e.code,
-                    }
-                }, 404);
+        } catch (e) {
+            if (e instanceof DownloadFileErrorFileNotFound) {
+                return c.json(
+                    {
+                        error: {
+                            code: e.code,
+                            message: e.message,
+                        },
+                    },
+                    404,
+                );
             }
 
             this._logger.error(`[${this.constructor.name}] Error downloading file ${fileId}`, {
                 error: e,
             });
-            
-            return c.json({
-                error: {
-                    code: 'DOWNLOAD_FILE_ERROR',
-                }
-            }, 500);
+
+            return c.json(
+                {
+                    error: {
+                        message: (e as any).message,
+                    },
+                },
+                500,
+            );
         }
     }
 

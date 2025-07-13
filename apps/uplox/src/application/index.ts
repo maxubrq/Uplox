@@ -7,3 +7,4 @@ export * from './app-av-scanner';
 export * from './app-filetype-scanner';
 export * from './app-storage';
 export * from './app-metric';
+export * from './app-cache';

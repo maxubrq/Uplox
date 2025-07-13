@@ -50,7 +50,7 @@ services:
       - uplox-network
 
   cache:
-    image: redis/redis-stack:7.2.0-v17
+    image: redis/redis-stack:latest
     container_name: uplox-cache
     ports:
       - "6379:6379"

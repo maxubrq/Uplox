@@ -87,24 +87,24 @@ export class MinioStorage implements UploxStorage<UploxFile> {
     }
 
     async fileExist(id: string): Promise<boolean> {
-        try{
+        try {
             await this._minioClient.statObject(this._bucket, id);
             return true;
-        }catch(e){
+        } catch (e) {
             return false;
         }
     }
 
-    protected async streamToString(readable: Readable):Promise<string>{
+    protected async streamToString(readable: Readable): Promise<string> {
         let resultBuffer = Buffer.alloc(0);
         return new Promise((resolve, reject) => {
-            readable.on('data', (chunk) => {
+            readable.on('data', chunk => {
                 resultBuffer = Buffer.concat([resultBuffer, chunk]);
             });
             readable.on('end', () => {
                 resolve(resultBuffer.toString());
             });
-            readable.on('error', (err) => {
+            readable.on('error', err => {
                 reject(err);
             });
         });

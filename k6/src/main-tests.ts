@@ -90,6 +90,7 @@ function testFileUpload(
 
   let uploadResponse;
   let downloadResponse;
+  let metadataResponse;
 
   // Test: upload
   uploadResponse = http.post(`${TARGET_URL}/files/upload`, formData, {
@@ -100,6 +101,9 @@ function testFileUpload(
   if (uploadResponse.status === 200) {
     const fileId = uploadResponse.json().fileId;
     downloadResponse = http.get(`${TARGET_URL}/files/${fileId}/download`, {
+      timeout: "30s",
+    });
+    metadataResponse = http.get(`${TARGET_URL}/files/${fileId}/metadata`, {
       timeout: "30s",
     });
   }

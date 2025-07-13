@@ -4,6 +4,5 @@ export class DownloadFileErrorFileNotFound extends Error {
     constructor(message: string) {
         super(message);
         this.name = 'DownloadFileErrorFileNotFound';
-
     }
 }

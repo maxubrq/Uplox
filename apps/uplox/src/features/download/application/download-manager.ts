@@ -11,10 +11,10 @@ export class DownloadManager {
     async getDownloadableUrl(fileId: string): Promise<string> {
         try {
             const isFileExist = await this._storage.fileExist(fileId);
-            if(!isFileExist){
+            if (!isFileExist) {
                 throw new DownloadFileErrorFileNotFound(`File ${fileId} not found`);
             }
-            
+
             this._logger.info(`[${this.constructor.name}] Preparing download for file ${fileId}`);
             const url = await this._storage.getDownloadableUrl(fileId);
             this._logger.debug(`[${this.constructor.name}] Download URL: ${url}`);

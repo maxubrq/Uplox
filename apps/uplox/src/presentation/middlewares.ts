@@ -43,9 +43,12 @@ export function metricsRequestDurationMillisMiddlware(metrics: AppMetrics) {
             if (route !== '/metrics' && route !== '/health' && route.includes('upload')) {
                 const duration = Date.now() - startTime;
                 metrics.uploadRequestDurationMillis(duration, c.req.method, c.req.path, c.res.status.toString());
-            } else if (route.includes('download')){
+            } else if (route.includes('download')) {
                 const duration = Date.now() - startTime;
-                metrics.presignDurationMillis(duration, c.req.method, 'files/:id/download', c.res.status.toString())
+                metrics.presignDurationMillis(duration, c.req.method, 'files/:id/download', c.res.status.toString());
+            } else if (route.includes('metadata')) {
+                const duration = Date.now() - startTime;
+                metrics.metadataDurationMillis(duration, c.req.method, 'files/:id/metadata', c.res.status.toString());
             }
         }
     };

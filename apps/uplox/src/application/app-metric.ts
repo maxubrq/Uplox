@@ -17,6 +17,14 @@ export interface AppMetrics {
      */
     presignDurationMillis(duration: number, method?: string, route?: string, statusCode?: string): Promise<void>;
     /**
+     * Metadata request duration in milliseconds - Histogram
+     * @param duration Duration in milliseconds
+     * @param method HTTP method
+     * @param route Route path
+     * @param statusCode HTTP status code
+     */
+    metadataDurationMillis(duration: number, method?: string, route?: string, statusCode?: string): Promise<void>;
+    /**
      * AV scan duration in milliseconds - Histogram
      * @param name Scanner name
      * @param duration Duration in milliseconds

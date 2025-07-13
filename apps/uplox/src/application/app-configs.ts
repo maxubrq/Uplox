@@ -17,7 +17,7 @@ export class UploxAppConfigs {
 
     private constructor() {
         this.nodeEnv = process.env.NODE_ENV || 'development';
-        this.redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+        this.redisUrl = process.env.REDIS_URL || 'redis://cache:6379';
         this.databaseUrl = process.env.DATABASE_URL || 'postgresql://localhost:5432/uplox';
         this.minioEndpoint = process.env.MINIO_ENDPOINT || 'storage';
         this.minioPort = parseInt(process.env.MINIO_PORT || '9000');

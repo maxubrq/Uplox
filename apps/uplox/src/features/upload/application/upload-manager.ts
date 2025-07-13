@@ -3,6 +3,7 @@ import {
     UploxAppLogger,
     UploxAVScanner,
     UploxAVScanResult,
+    UploxCache,
     UploxFileTypeScanner,
     UploxFileTypeScanResult,
     UploxStorage,
@@ -25,9 +26,20 @@ export class UploadManager {
         private _avScanner: UploxAVScanner,
         private _storage: UploxStorage<UploxFile>,
         private _metrics: AppMetrics,
+        private _cache: UploxCache,
     ) {}
 
     private _scannersInitialized = false;
+
+    async saveMetadata(file: UploxFile): Promise<void> {
+        try{
+            await this._cache.setFile(file);
+        }catch(err){
+            this._logger.error(`[${this.constructor.name}] Error saving metadata for file ${file.id}`, {
+                error: err,
+            });
+        }
+    }
 
     async init(): Promise<void> {
         try {
@@ -154,6 +166,8 @@ export class UploadManager {
                 () => this._storage.saveFile(file, uploxF, fileHash),
                 this._storage.getBucket(),
             );
+
+            await this.saveMetadata(uploxF);
 
             await this.recordMetrics(fileType.mimeType);
 

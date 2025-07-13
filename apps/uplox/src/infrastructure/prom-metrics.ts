@@ -7,6 +7,8 @@ export class PromMetrics implements AppMetrics {
     // Performance metrics - Histograms
     private readonly uploadRequestDurationHist: Histogram<string>;
     private readonly presignDurationHist: Histogram<string>;
+    private readonly metadataDurationHist: Histogram<string>;
+
     private readonly avScanDurationHist: Histogram<string>;
     private readonly storagePutLatencyHist: Histogram<string>;
     private readonly healthCheckLatencyHist: Histogram<string>;
@@ -40,6 +42,13 @@ export class PromMetrics implements AppMetrics {
         this.presignDurationHist = new Histogram({
             name: 'uplox_presign_duration_milliseconds',
             help: 'Duration of presign requests in milliseconds',
+            labelNames: ['method', 'route', 'status_code'],
+            buckets: [1, 5, 15, 50, 100, 500, 1000, 5000],
+        });
+
+        this.metadataDurationHist = new Histogram({
+            name: 'uplox_metadata_duration_milliseconds',
+            help: 'Duration of metadata requests in milliseconds',
             labelNames: ['method', 'route', 'status_code'],
             buckets: [1, 5, 15, 50, 100, 500, 1000, 5000],
         });
@@ -159,6 +168,18 @@ export class PromMetrics implements AppMetrics {
 
     async presignDurationMillis(duration: number, method?: string, route?: string, statusCode?: string): Promise<void> {
         this.presignDurationHist.observe(
+            { method: method || 'unknown', route: route || 'unknown', status_code: statusCode || 'unknown' },
+            duration,
+        );
+    }
+
+    async metadataDurationMillis(
+        duration: number,
+        method?: string,
+        route?: string,
+        statusCode?: string,
+    ): Promise<void> {
+        this.metadataDurationHist.observe(
             { method: method || 'unknown', route: route || 'unknown', status_code: statusCode || 'unknown' },
             duration,
         );
