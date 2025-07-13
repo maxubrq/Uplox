@@ -29,7 +29,7 @@ Born under the SEM mantra **Safe → Scale → Performance Excellent** (Levels 1
 | Pillar    | What You Get                                                                                                                  |
 |-----------|-------------------------------------------------------------------------------------------------------------------------------|
 | **Safe**  | • End-to-end TLS, HSTS, CSP<br>• Virus scan before object finalises<br>• OWASP headers & rate-limit                           |
-| **Scale** | • Streaming uploader → any S3 / MinIO<br>• Stateless; ready for horizontal scaling<br>• Prometheus metrics + JSON logs (pino) |
+| **Scale** | • Streaming uploader → any S3 / MinIO<br>• Stateless; ready for horizontal scaling<br>• Prometheus metrics + JSON logs (winston) |
 | **Perf**  | • Presign API < 50 ms P95<br>• Upload path zero-copy, constant memory<br>• Benchmark 1 000 RPS @ 150 ms on 512 MiB tier       |
 
 ---
@@ -39,16 +39,17 @@ Born under the SEM mantra **Safe → Scale → Performance Excellent** (Levels 1
 ```bash
 git clone https://github.com/your-org/uplox
 cd uplox
-cp .env.example .env   # fill S3 + ClamAV creds
-docker compose up -d   # boots app + minio + clamav
-npm run dev            # hot-reload
+docker compose up -d   # boots app + minio + clamav + redis
+pnpm run dev           # hot-reload development
 ```
 
-| Method / Path   | Purpose                                    |
-|-----------------|--------------------------------------------|
-| `POST /file`    | Entrypoint for uploading/downloading file_ |
-| `GET  /health`  | Liveness & readiness probes                |
-| `GET  /metrics` | Prometheus exposition                      |
+| Method / Path                    | Purpose                                    |
+|----------------------------------|--------------------------------------------|
+| `POST /files/upload`             | Upload files with virus scanning          |
+| `GET /files/:fileId/download`    | Get downloadable URL for a file           |
+| `GET /files/:fileId/metadata`    | Get file metadata (size, hash, MIME type) |
+| `GET /health`                    | Liveness & readiness probes                |
+| `GET /metrics`                   | Prometheus exposition                      |
 
 ---
 
@@ -94,7 +95,7 @@ fly launch --image ghcr.io/your-org/uplox:0.1.0
 CI template already:
 
 - Lints + `tsc --noEmit`
-- Jest + Supertest (≥ 60 % L1, 80 % L2)
+- Vitest + comprehensive mocking (≥ 60 % L1, 80 % L2)
 - Builds slim (≤ 150 MB) image & Trivy scan
 - Publishes SBOM to GitHub-Dependabot
 
