@@ -6,7 +6,7 @@ describe('UploxFile', () => {
     const mockHashes = {
         md5: 'abc123',
         sha1: 'def456',
-        sha256: 'ghi789'
+        sha256: 'ghi789',
     };
 
     beforeEach(() => {
@@ -23,7 +23,7 @@ describe('UploxFile', () => {
                 'txt',
                 mockDate,
                 mockDate,
-                mockHashes
+                mockHashes,
             );
 
             expect(file.id).toBe('test-id');
@@ -50,16 +50,7 @@ describe('UploxFile', () => {
         });
 
         it('should handle empty strings for optional parameters', () => {
-            const file = new UploxFile(
-                'test-id',
-                'test-file.txt',
-                1024,
-                '',
-                '',
-                undefined,
-                undefined,
-                {}
-            );
+            const file = new UploxFile('test-id', 'test-file.txt', 1024, '', '', undefined, undefined, {});
 
             expect(file.mimeType).toBe('');
             expect(file.extension).toBe('');
@@ -77,7 +68,7 @@ describe('UploxFile', () => {
                 extension: 'txt',
                 createdAt: mockDate,
                 updatedAt: mockDate,
-                hashes: mockHashes
+                hashes: mockHashes,
             };
 
             const file = UploxFile.fromJSON(json);
@@ -96,7 +87,7 @@ describe('UploxFile', () => {
             const json = {
                 id: 'test-id',
                 name: 'test-file.txt',
-                size: 1024
+                size: 1024,
             };
 
             const file = UploxFile.fromJSON(json);
@@ -114,7 +105,7 @@ describe('UploxFile', () => {
         it('should throw error when id is missing', () => {
             const json = {
                 name: 'test-file.txt',
-                size: 1024
+                size: 1024,
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -123,7 +114,7 @@ describe('UploxFile', () => {
         it('should throw error when name is missing', () => {
             const json = {
                 id: 'test-id',
-                size: 1024
+                size: 1024,
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -132,7 +123,7 @@ describe('UploxFile', () => {
         it('should throw error when size is missing', () => {
             const json = {
                 id: 'test-id',
-                name: 'test-file.txt'
+                name: 'test-file.txt',
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -142,7 +133,7 @@ describe('UploxFile', () => {
             const json = {
                 id: '',
                 name: 'test-file.txt',
-                size: 1024
+                size: 1024,
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -152,7 +143,7 @@ describe('UploxFile', () => {
             const json = {
                 id: 'test-id',
                 name: '',
-                size: 1024
+                size: 1024,
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -162,7 +153,7 @@ describe('UploxFile', () => {
             const json = {
                 id: 'test-id',
                 name: 'test-file.txt',
-                size: 0
+                size: 0,
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -172,7 +163,7 @@ describe('UploxFile', () => {
             const json = {
                 id: null,
                 name: 'test-file.txt',
-                size: 1024
+                size: 1024,
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -182,7 +173,7 @@ describe('UploxFile', () => {
             const json = {
                 id: 'test-id',
                 name: null,
-                size: 1024
+                size: 1024,
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -192,7 +183,7 @@ describe('UploxFile', () => {
             const json = {
                 id: 'test-id',
                 name: 'test-file.txt',
-                size: null
+                size: null,
             };
 
             expect(() => UploxFile.fromJSON(json)).toThrow('Invalid file JSON');
@@ -207,7 +198,7 @@ describe('UploxFile', () => {
                 extension: '',
                 createdAt: null,
                 updatedAt: null,
-                hashes: null
+                hashes: null,
             };
 
             const file = UploxFile.fromJSON(json);
@@ -230,7 +221,7 @@ describe('UploxFile', () => {
                 'txt',
                 mockDate,
                 mockDate,
-                mockHashes
+                mockHashes,
             );
 
             const json = file.toJSON();
@@ -243,7 +234,7 @@ describe('UploxFile', () => {
                 extension: 'txt',
                 createdAt: mockDate,
                 updatedAt: mockDate,
-                hashes: mockHashes
+                hashes: mockHashes,
             });
         });
 
@@ -260,21 +251,12 @@ describe('UploxFile', () => {
                 extension: undefined,
                 createdAt: undefined,
                 updatedAt: undefined,
-                hashes: undefined
+                hashes: undefined,
             });
         });
 
         it('should return JSON representation with falsy values', () => {
-            const file = new UploxFile(
-                'test-id',
-                'test-file.txt',
-                1024,
-                '',
-                '',
-                null as any,
-                null as any,
-                {}
-            );
+            const file = new UploxFile('test-id', 'test-file.txt', 1024, '', '', null as any, null as any, {});
 
             const json = file.toJSON();
 
@@ -286,7 +268,7 @@ describe('UploxFile', () => {
                 extension: '',
                 createdAt: null,
                 updatedAt: null,
-                hashes: {}
+                hashes: {},
             });
         });
     });
@@ -297,7 +279,7 @@ describe('UploxFile', () => {
             const mockFile = {
                 name: 'test-file.txt',
                 size: 1024,
-                type: 'text/plain'
+                type: 'text/plain',
             } as File;
 
             const file = UploxFile.fromFile(mockFile, 'test-id');
@@ -316,7 +298,7 @@ describe('UploxFile', () => {
             const mockFile = {
                 name: 'test-file (1) [copy].txt',
                 size: 2048,
-                type: 'text/plain'
+                type: 'text/plain',
             } as File;
 
             const file = UploxFile.fromFile(mockFile, 'test-id-special');
@@ -330,7 +312,7 @@ describe('UploxFile', () => {
             const mockFile = {
                 name: '',
                 size: 512,
-                type: 'application/octet-stream'
+                type: 'application/octet-stream',
             } as File;
 
             const file = UploxFile.fromFile(mockFile, 'test-id-empty');
@@ -344,7 +326,7 @@ describe('UploxFile', () => {
             const mockFile = {
                 name: 'empty-file.txt',
                 size: 0,
-                type: 'text/plain'
+                type: 'text/plain',
             } as File;
 
             const file = UploxFile.fromFile(mockFile, 'test-id-zero');
@@ -365,7 +347,7 @@ describe('UploxFile', () => {
                 extension: 'txt',
                 createdAt: mockDate,
                 updatedAt: mockDate,
-                hashes: mockHashes
+                hashes: mockHashes,
             };
 
             const file = UploxFile.fromJSON(originalData);
@@ -378,7 +360,7 @@ describe('UploxFile', () => {
             const originalData = {
                 id: 'test-id',
                 name: 'test-file.txt',
-                size: 1024
+                size: 1024,
             };
 
             const file = UploxFile.fromJSON(originalData);
@@ -390,7 +372,7 @@ describe('UploxFile', () => {
                 extension: undefined,
                 createdAt: undefined,
                 updatedAt: undefined,
-                hashes: undefined
+                hashes: undefined,
             });
         });
     });
@@ -422,7 +404,16 @@ describe('UploxFile', () => {
 
         it('should handle partial hash objects', () => {
             const partialHashes = { md5: 'abc123' };
-            const file = new UploxFile('test-id', 'file.txt', 1024, undefined, undefined, undefined, undefined, partialHashes);
+            const file = new UploxFile(
+                'test-id',
+                'file.txt',
+                1024,
+                undefined,
+                undefined,
+                undefined,
+                undefined,
+                partialHashes,
+            );
 
             expect(file.hashes).toEqual(partialHashes);
             expect(file.toJSON().hashes).toEqual(partialHashes);

@@ -3,7 +3,7 @@ import { genId } from '../gen';
 
 // Mock the short-uuid module
 vi.mock('short-uuid', () => ({
-    generate: vi.fn()
+    generate: vi.fn(),
 }));
 
 // Import the mocked generate function
@@ -51,7 +51,7 @@ describe('genId', () => {
             { prefix: 'user', expected: `user_${mockUuid}` },
             { prefix: 'order', expected: `order_${mockUuid}` },
             { prefix: 'product', expected: `product_${mockUuid}` },
-            { prefix: 'session', expected: `session_${mockUuid}` }
+            { prefix: 'session', expected: `session_${mockUuid}` },
         ];
 
         testCases.forEach(({ prefix, expected }) => {

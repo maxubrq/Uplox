@@ -13,8 +13,6 @@ const mockUploadManager = {
     uploadFile: vi.fn(),
 };
 
-
-
 // Mock genId
 vi.mock('../../../../shared', () => ({
     genId: vi.fn(() => 'file_123'),
@@ -27,7 +25,7 @@ describe('UploadRoutes', () => {
     beforeEach(() => {
         // Reset mocks
         vi.clearAllMocks();
-        
+
         // Create instance
         uploadRoutes = new UploadRoutes(mockLogger as any, mockUploadManager as any);
 
@@ -50,7 +48,7 @@ describe('UploadRoutes', () => {
     describe('getRoutes', () => {
         it('should return correct routes configuration', () => {
             const routes = uploadRoutes.getRoutes();
-            
+
             expect(routes).toHaveLength(1);
             expect(routes[0]).toEqual({
                 method: 'POST',
@@ -75,9 +73,7 @@ describe('UploadRoutes', () => {
                 handler: expect.any(Function),
             });
 
-            expect(mockLogger.info).toHaveBeenCalledWith(
-                '[UploadRoutes] Attached route POST /files/upload'
-            );
+            expect(mockLogger.info).toHaveBeenCalledWith('[UploadRoutes] Attached route POST /files/upload');
         });
     });
 
@@ -117,7 +113,7 @@ describe('UploadRoutes', () => {
                     hashes: mockUploadResult.file.hashes,
                     mimeType: 'text/plain',
                     avScan: mockUploadResult.avScan,
-                })
+                }),
             );
         });
 
@@ -131,7 +127,7 @@ describe('UploadRoutes', () => {
             // Assert
             expect(mockContext.json).toHaveBeenCalledWith(
                 { message: 'Failed to upload file', code: 'UPLOAD_FILE_ERROR_UNKNOWN' },
-                500
+                500,
             );
         });
 
@@ -151,10 +147,7 @@ describe('UploadRoutes', () => {
             await uploadRoutes['_handleUploadFile'](mockContext);
 
             // Assert
-            expect(mockContext.json).toHaveBeenCalledWith(
-                { message: 'No file provided or no sha256 hash' },
-                400
-            );
+            expect(mockContext.json).toHaveBeenCalledWith({ message: 'No file provided or no sha256 hash' }, 400);
         });
 
         it('should return 400 when no file is provided', async () => {
@@ -173,10 +166,7 @@ describe('UploadRoutes', () => {
             await uploadRoutes['_handleUploadFile'](mockContext);
 
             // Assert
-            expect(mockContext.json).toHaveBeenCalledWith(
-                { message: 'No file provided' },
-                400
-            );
+            expect(mockContext.json).toHaveBeenCalledWith({ message: 'No file provided' }, 400);
         });
 
         it('should handle upload errors and return 500', async () => {
@@ -199,7 +189,7 @@ describe('UploadRoutes', () => {
             // Assert
             expect(mockContext.json).toHaveBeenCalledWith(
                 { message: 'Failed to upload file', code: 'UPLOAD_FILE_ERROR_UNKNOWN' },
-                500
+                500,
             );
         });
     });

@@ -30,7 +30,7 @@ export function metricsFailedCounterMiddleware(metrics: AppMetrics) {
     };
 }
 
-export function metricsUploadRequestDurationMillisMiddlware(metrics: AppMetrics) {
+export function metricsRequestDurationMillisMiddlware(metrics: AppMetrics) {
     return async (c: Context<UploxAppEnv, any, {}>, next: () => Promise<void>): Promise<void> => {
         const startTime = Date.now();
         try {
@@ -40,9 +40,12 @@ export function metricsUploadRequestDurationMillisMiddlware(metrics: AppMetrics)
         } finally {
             const route = c.req.path;
             // Ignore healthcheck and metrics paths
-            if (route !== '/metrics' && route !== '/health') {
+            if (route !== '/metrics' && route !== '/health' && route.includes('upload')) {
                 const duration = Date.now() - startTime;
                 metrics.uploadRequestDurationMillis(duration, c.req.method, c.req.path, c.res.status.toString());
+            } else if (route.includes('download')){
+                const duration = Date.now() - startTime;
+                metrics.presignDurationMillis(duration, c.req.method, 'files/:id/download', c.res.status.toString())
             }
         }
     };

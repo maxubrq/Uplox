@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { 
-    requestIdMiddleware, 
+import {
+    requestIdMiddleware,
     metricsFailedCounterMiddleware,
     metricsUploadRequestDurationMillisMiddlware,
     metricsThroughputBytesPerSecMiddleware,
-    metricsHealthCheckLatencyMillisMiddleware
+    metricsHealthCheckLatencyMillisMiddleware,
 } from '../middlewares';
 import { genId } from '@shared/utils/gen';
 import { Context } from 'hono';
@@ -270,19 +270,14 @@ describe('Middleware Tests', () => {
 
             // Act
             const middlewarePromise = middleware(mockContext as Context<UploxAppEnv, any, {}>, mockNext);
-            
+
             // Advance time by 100ms
             vi.advanceTimersByTime(100);
-            
+
             await middlewarePromise;
 
             // Assert
-            expect(mockMetrics.uploadRequestDurationMillis).toHaveBeenCalledWith(
-                100,
-                'POST',
-                '/upload',
-                '200'
-            );
+            expect(mockMetrics.uploadRequestDurationMillis).toHaveBeenCalledWith(100, 'POST', '/upload', '200');
         });
 
         it('should measure request duration even when an error is thrown', async () => {
@@ -293,17 +288,12 @@ describe('Middleware Tests', () => {
 
             // Act & Assert
             const middlewarePromise = middleware(mockContext as Context<UploxAppEnv, any, {}>, mockNext);
-            
+
             vi.advanceTimersByTime(50);
-            
+
             await expect(middlewarePromise).rejects.toThrow('Request failed');
 
-            expect(mockMetrics.uploadRequestDurationMillis).toHaveBeenCalledWith(
-                50,
-                'POST',
-                '/upload',
-                '200'
-            );
+            expect(mockMetrics.uploadRequestDurationMillis).toHaveBeenCalledWith(50, 'POST', '/upload', '200');
         });
 
         it('should ignore /metrics path', async () => {
@@ -504,10 +494,10 @@ describe('Middleware Tests', () => {
 
             // Act
             const middlewarePromise = middleware(mockContext as Context<UploxAppEnv, any, {}>, mockNext);
-            
+
             // Advance time by 25ms
             vi.advanceTimersByTime(25);
-            
+
             await middlewarePromise;
 
             // Assert
@@ -533,9 +523,9 @@ describe('Middleware Tests', () => {
 
             // Act & Assert
             const middlewarePromise = middleware(mockContext as Context<UploxAppEnv, any, {}>, mockNext);
-            
+
             vi.advanceTimersByTime(15);
-            
+
             await expect(middlewarePromise).rejects.toThrow('Health check failed');
 
             expect(mockMetrics.healthCheckLatencyMillis).toHaveBeenCalledWith(15, '/health');

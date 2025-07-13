@@ -7,7 +7,7 @@ describe('UploxAppConfigs', () => {
     beforeEach(() => {
         // Store original environment variables
         originalEnv = { ...process.env };
-        
+
         // Clear all environment variables that might affect the tests
         delete process.env.NODE_ENV;
         delete process.env.REDIS_URL;

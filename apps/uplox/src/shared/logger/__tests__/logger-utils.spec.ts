@@ -8,14 +8,14 @@ import {
     customFileFormat,
     logArgsFormatJson,
     logArgsFormat,
-    padString
+    padString,
 } from '../logger-utils';
 
 // Mock winston format
 vi.mock('winston', () => ({
     format: {
-        printf: vi.fn()
-    }
+        printf: vi.fn(),
+    },
 }));
 
 describe('logger-utils', () => {
@@ -94,7 +94,7 @@ describe('logger-utils', () => {
 
         it('should format log message correctly when calling the internal function', () => {
             let formatFunction: any;
-            vi.mocked(format.printf).mockImplementation((callback) => {
+            vi.mocked(format.printf).mockImplementation(callback => {
                 formatFunction = callback;
                 return callback as any;
             });
@@ -105,7 +105,7 @@ describe('logger-utils', () => {
                 level: 'info',
                 message: 'Test message',
                 key1: 'value1',
-                key2: 'value2'
+                key2: 'value2',
             });
 
             expect(result).toContain('[info  ]');
@@ -119,7 +119,7 @@ describe('logger-utils', () => {
 
         it('should format log message with JSON args when useJson is true', () => {
             let formatFunction: any;
-            vi.mocked(format.printf).mockImplementation((callback) => {
+            vi.mocked(format.printf).mockImplementation(callback => {
                 formatFunction = callback;
                 return callback as any;
             });
@@ -130,7 +130,7 @@ describe('logger-utils', () => {
                 level: 'error',
                 message: 'Test message',
                 key1: 'value1',
-                key2: 'value2'
+                key2: 'value2',
             });
 
             expect(result).toContain('[error ]');
@@ -155,7 +155,7 @@ describe('logger-utils', () => {
 
         it('should format log message correctly when calling the internal function', () => {
             let formatFunction: any;
-            vi.mocked(format.printf).mockImplementation((callback) => {
+            vi.mocked(format.printf).mockImplementation(callback => {
                 formatFunction = callback;
                 return callback as any;
             });
@@ -166,7 +166,7 @@ describe('logger-utils', () => {
                 level: 'warn',
                 message: 'Test message',
                 key1: 'value1',
-                key2: 'value2'
+                key2: 'value2',
             });
 
             expect(result).toBe('[warn  ] [TestApp] Test message key1=value1 key2=value2');
@@ -174,7 +174,7 @@ describe('logger-utils', () => {
 
         it('should format log message with JSON args when useJson is true', () => {
             let formatFunction: any;
-            vi.mocked(format.printf).mockImplementation((callback) => {
+            vi.mocked(format.printf).mockImplementation(callback => {
                 formatFunction = callback;
                 return callback as any;
             });
@@ -185,7 +185,7 @@ describe('logger-utils', () => {
                 level: 'debug',
                 message: 'Test message',
                 key1: 'value1',
-                key2: 'value2'
+                key2: 'value2',
             });
 
             expect(result).toContain('[debug ] [TestApp] Test message');
@@ -198,17 +198,17 @@ describe('logger-utils', () => {
         it('should format simple object as JSON', () => {
             const args = { key1: 'value1', key2: 'value2' };
             const result = logArgsFormatJson(args);
-            
+
             expect(result).toBe('{\n  "key1": "value1",\n  "key2": "value2"\n}');
         });
 
         it('should format nested object as JSON', () => {
-            const args = { 
-                key1: 'value1', 
-                nested: { key2: 'value2', key3: 'value3' } 
+            const args = {
+                key1: 'value1',
+                nested: { key2: 'value2', key3: 'value3' },
             };
             const result = logArgsFormatJson(args);
-            
+
             expect(result).toContain('"key1": "value1"');
             expect(result).toContain('"nested": {');
             expect(result).toContain('"key2": "value2"');
@@ -218,14 +218,14 @@ describe('logger-utils', () => {
         it('should format empty object as JSON', () => {
             const args = {};
             const result = logArgsFormatJson(args);
-            
+
             expect(result).toBe('{}');
         });
 
         it('should format array values as JSON', () => {
             const args = { items: ['item1', 'item2'], count: 2 };
             const result = logArgsFormatJson(args);
-            
+
             expect(result).toContain('"items": [\n    "item1",\n    "item2"\n  ]');
             expect(result).toContain('"count": 2');
         });
@@ -235,74 +235,74 @@ describe('logger-utils', () => {
         it('should format simple object as key=value pairs', () => {
             const args = { key1: 'value1', key2: 'value2' };
             const result = logArgsFormat(args);
-            
+
             expect(result).toBe('key1=value1 key2=value2');
         });
 
         it('should format nested object with level 1 nesting', () => {
-            const args = { 
-                key1: 'value1', 
-                nested: { key2: 'value2', key3: 'value3' } 
+            const args = {
+                key1: 'value1',
+                nested: { key2: 'value2', key3: 'value3' },
             };
             const result = logArgsFormat(args);
-            
+
             expect(result).toBe('key1=value1 nested=key2=value2 key3=value3');
         });
 
         it('should format arrays as JSON strings', () => {
             const args = { items: ['item1', 'item2'], count: 2 };
             const result = logArgsFormat(args);
-            
+
             expect(result).toBe('items=["item1","item2"] count=2');
         });
 
         it('should handle null values', () => {
             const args = { key1: null, key2: 'value2' };
             const result = logArgsFormat(args);
-            
+
             expect(result).toBe('key1=null key2=value2');
         });
 
         it('should handle undefined values', () => {
             const args = { key1: undefined, key2: 'value2' };
             const result = logArgsFormat(args);
-            
+
             expect(result).toBe('key1=undefined key2=value2');
         });
 
         it('should handle boolean values', () => {
             const args = { isEnabled: true, isVisible: false };
             const result = logArgsFormat(args);
-            
+
             expect(result).toBe('isEnabled=true isVisible=false');
         });
 
         it('should handle number values', () => {
             const args = { count: 42, price: 99.99 };
             const result = logArgsFormat(args);
-            
+
             expect(result).toBe('count=42 price=99.99');
         });
 
         it('should limit nesting to 3 levels', () => {
-            const args = { 
-                level1: { 
-                    level2: { 
-                        level3: { 
-                            level4: 'deep value' 
-                        } 
-                    } 
-                } 
+            const args = {
+                level1: {
+                    level2: {
+                        level3: {
+                            level4: 'deep value',
+                        },
+                    },
+                },
             };
             const result = logArgsFormat(args);
-            
+
             expect(result).toContain('level1=level2=level3=level4=deep value');
         });
 
         it('should handle empty object', () => {
             const args = {};
             const result = logArgsFormat(args);
-            
+
             expect(result).toBe('');
         });
 
@@ -311,10 +311,10 @@ describe('logger-utils', () => {
                 user: { id: 1, name: 'John' },
                 items: [1, 2, 3],
                 enabled: true,
-                config: { timeout: 5000, retries: 3 }
+                config: { timeout: 5000, retries: 3 },
             };
             const result = logArgsFormat(args);
-            
+
             expect(result).toContain('user=id=1 name=John');
             expect(result).toContain('items=[1,2,3]');
             expect(result).toContain('enabled=true');

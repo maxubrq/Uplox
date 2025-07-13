@@ -77,7 +77,7 @@ describe('Hash Utils', () => {
                 update: vi.fn().mockReturnThis(),
                 digest: vi.fn().mockReturnValue('file123'),
             };
-            
+
             mockReadFileSync.mockReturnValue(mockFileContent);
             mockCreateHash.mockReturnValue(mockHashObject as any);
 
@@ -117,7 +117,7 @@ describe('Hash Utils', () => {
                         this.push(null); // end stream
                         readCount++;
                     }
-                }
+                },
             });
 
             const result = await hashStream('sha256', mockStream);
@@ -143,7 +143,7 @@ describe('Hash Utils', () => {
                         this.push(null); // immediately end stream
                         readCount++;
                     }
-                }
+                },
             });
 
             const result = await hashStream('sha256', mockStream);
@@ -169,7 +169,7 @@ describe('Hash Utils', () => {
                         this.emit('error', error);
                         readCount++;
                     }
-                }
+                },
             });
 
             await expect(hashStream('sha256', mockStream)).rejects.toThrow('Stream error');
@@ -191,7 +191,7 @@ describe('Hash Utils', () => {
                     } else {
                         this.push(null);
                     }
-                }
+                },
             });
 
             const result = await hashStream('sha256', mockStream);
@@ -220,7 +220,7 @@ describe('Hash Utils', () => {
                         // Emit error after some data
                         setImmediate(() => this.emit('error', error));
                     }
-                }
+                },
             });
 
             await expect(hashStream('sha256', mockStream)).rejects.toThrow('Mid-stream error');

@@ -1,14 +1,14 @@
 import { AppMetrics, UploxApp } from '@application';
 import { UploxAppConfigs } from '@application/app-configs';
-import { UploadRoutes } from '@features/upload';
-import { UploadManager } from '@features/upload/application';
+import { DownloadManager, DownloadRoutes } from '@features/download';
+import { UploadManager, UploadRoutes } from '@features/upload';
 import { ClamAVScanner, FileTypeScanner, PromMetrics } from '@infrastructure';
 import { MinioStorage } from '@infrastructure/minio-storage';
 import {
     metricsFailedCounterMiddleware,
     metricsHealthCheckLatencyMillisMiddleware,
     metricsThroughputBytesPerSecMiddleware,
-    metricsUploadRequestDurationMillisMiddlware,
+    metricsRequestDurationMillisMiddlware,
     requestIdMiddleware,
     UploxAppImpl,
 } from '@presentation';
@@ -54,7 +54,7 @@ function bootstrap() {
     const app = new UploxAppImpl(appConfig, logger);
     app.use(requestIdMiddleware);
     app.use(metricsFailedCounterMiddleware(appMetrics));
-    app.use(metricsUploadRequestDurationMillisMiddlware(appMetrics));
+    app.use(metricsRequestDurationMillisMiddlware(appMetrics));
     app.use(metricsThroughputBytesPerSecMiddleware(appMetrics));
     app.use(metricsHealthCheckLatencyMillisMiddleware(appMetrics));
 
@@ -65,13 +65,18 @@ function bootstrap() {
     const uploadRoutes = new UploadRoutes(logger, uploadManager);
     uploadRoutes.attachRoutes(app);
 
-    // 4. Inject metrics routes
+    // 4. Download routes & inject dependencies
+    const downloadManager = new DownloadManager(logger, storage);
+    const downloadRoutes = new DownloadRoutes(logger, downloadManager);
+    downloadRoutes.attachRoutes(app);
+
+    // 5. Inject metrics routes
     injectMetricsRoutes(app, appMetrics);
 
-    // 5. Inject health check routes
+    // 6. Inject health check routes
     injectHealthCheckRoutes(app);
 
-    // 6. Start app
+    // 7. Start app
     app.start();
 }
 

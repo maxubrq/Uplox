@@ -14,7 +14,6 @@ export class UploadRoutes implements UploxRoutes<Handler, Context> {
     private async _handleUploadFile(c: Context): Promise<Response> {
         const requestId = c.get('requestId');
         try {
-            const fileId = genId('file');
             const reqBody = await c.req.formData();
             const sha256 = reqBody.get('sha256');
             if (!reqBody || !sha256) {
@@ -30,7 +29,7 @@ export class UploadRoutes implements UploxRoutes<Handler, Context> {
             const result = await this._uploadManager.uploadFile(file, sha256 as string);
             this._logger.info(`[${this.constructor.name}] File uploaded`, {
                 requestId,
-                fileId,
+                fileId: result.fileId,
                 hashes: { ...result.file.hashes },
                 mimeType: result.file.mimeType,
                 avScan: result.avScan,
@@ -39,7 +38,7 @@ export class UploadRoutes implements UploxRoutes<Handler, Context> {
             return c.json({
                 message: 'File uploaded',
                 requestId,
-                fileId,
+                fileId: result.fileId,
                 hashes: { ...result.file.hashes },
                 mimeType: result.file.mimeType,
                 avScan: result.avScan,

@@ -2,6 +2,7 @@ import { UploxAppLogger, UploxStorage } from '@application';
 import { UploxFile } from '@domain';
 import { Readable } from 'stream';
 import * as Minio from 'minio';
+import { HOUR_MS } from '@shared';
 
 export type MinioOptions = {
     endpoint: string;
@@ -78,5 +79,40 @@ export class MinioStorage implements UploxStorage<UploxFile> {
 
     async metadataFileName(originalFileName: string): Promise<string> {
         return `${originalFileName}.meta.json`;
+    }
+
+    async getDownloadableUrl(id: string, ttl: number = 12 * HOUR_MS): Promise<string> {
+        const ttlSecs = Math.round(ttl / 1000);
+        return this._minioClient.presignedGetObject(this._bucket, id, ttlSecs);
+    }
+
+    async fileExist(id: string): Promise<boolean> {
+        try{
+            await this._minioClient.statObject(this._bucket, id);
+            return true;
+        }catch(e){
+            return false;
+        }
+    }
+
+    protected async streamToString(readable: Readable):Promise<string>{
+        let resultBuffer = Buffer.alloc(0);
+        return new Promise((resolve, reject) => {
+            readable.on('data', (chunk) => {
+                resultBuffer = Buffer.concat([resultBuffer, chunk]);
+            });
+            readable.on('end', () => {
+                resolve(resultBuffer.toString());
+            });
+            readable.on('error', (err) => {
+                reject(err);
+            });
+        });
+    }
+
+    async getFileMetadata(id: string): Promise<UploxFile> {
+        const metadataId = await this.metadataFileName(id);
+        const metadataContent = await this.streamToString(await this._minioClient.getObject(this._bucket, metadataId));
+        return UploxFile.fromJSON(JSON.parse(metadataContent));
     }
 }

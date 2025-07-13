@@ -24,14 +24,14 @@ describe('FileTypeScanner', () => {
     beforeEach(async () => {
         // Reset the singleton instance before each test
         (FileTypeScanner as any)._instance = null;
-        
+
         // Get mock reference
         const fileTypeModule = await import('file-type');
         mockFileTypeFromStream = vi.mocked(fileTypeModule).fileTypeFromStream;
-        
+
         // Clear all mocks
         vi.clearAllMocks();
-        
+
         // Create instance
         fileTypeScanner = FileTypeScanner.getInstance(mockLogger);
     });
@@ -45,13 +45,13 @@ describe('FileTypeScanner', () => {
         it('should return the same instance when called multiple times', () => {
             const instance1 = FileTypeScanner.getInstance(mockLogger);
             const instance2 = FileTypeScanner.getInstance(mockLogger);
-            
+
             expect(instance1).toBe(instance2);
         });
 
         it('should create a new instance if none exists', () => {
             const instance = FileTypeScanner.getInstance(mockLogger);
-            
+
             expect(instance).toBeInstanceOf(FileTypeScanner);
         });
     });
@@ -109,7 +109,7 @@ describe('FileTypeScanner', () => {
             mockFileTypeFromStream.mockResolvedValue(null);
 
             await expect(fileTypeScanner.scanFile(mockFile)).rejects.toThrow(
-                '[FileTypeScanner] Failed to detect file type'
+                '[FileTypeScanner] Failed to detect file type',
             );
         });
     });
@@ -183,7 +183,7 @@ describe('FileTypeScanner', () => {
             mockFileTypeFromStream.mockResolvedValue(null);
 
             await expect(fileTypeScanner.scanStream(mockStream)).rejects.toThrow(
-                '[FileTypeScanner] Failed to detect file type'
+                '[FileTypeScanner] Failed to detect file type',
             );
         });
     });
@@ -192,9 +192,7 @@ describe('FileTypeScanner', () => {
         it('should log initialization message', async () => {
             await fileTypeScanner.init();
 
-            expect(mockLogger.info).toHaveBeenCalledWith(
-                '[FileTypeScanner] Initializing file type scanner'
-            );
+            expect(mockLogger.info).toHaveBeenCalledWith('[FileTypeScanner] Initializing file type scanner');
         });
     });
 

@@ -61,10 +61,10 @@ let sampleFiles = new SharedArray("sample_files", () => {
     const sha256 = crypto.createHash("sha256");
     sha256.update(fileContent);
     const fileHash = sha256.digest("hex");
-    
+
     // Encode file content as base64 for safe storage in SharedArray
     const base64Content = encoding.b64encode(fileContent);
-    
+
     ret.push({
       name: f,
       content: base64Content,
@@ -75,23 +75,37 @@ let sampleFiles = new SharedArray("sample_files", () => {
 });
 
 // Test file upload with real file content and hash
-function testFileUpload(fileName: string, hash: string, base64Content: string): void {
+function testFileUpload(
+  fileName: string,
+  hash: string,
+  base64Content: string
+): void {
   // Decode base64 content back to binary
   const fileContent = encoding.b64decode(base64Content);
-  
+
   const formData = {
     file: http.file(fileContent, fileName),
     sha256: hash,
   };
 
-  let response;
+  let uploadResponse;
+  let downloadResponse;
 
-  response = http.post(`${TARGET_URL}/files/upload`, formData, {
+  // Test: upload
+  uploadResponse = http.post(`${TARGET_URL}/files/upload`, formData, {
     timeout: "30s",
   });
 
+  // Test: download
+  if (uploadResponse.status === 200) {
+    const fileId = uploadResponse.json().fileId;
+    downloadResponse = http.get(`${TARGET_URL}/files/${fileId}/download`, {
+      timeout: "30s",
+    });
+  }
+
   // Check response - both success and failure are acceptable
-  const isSuccess = check(response, {
+  const isSuccess = check(uploadResponse, {
     "status is 200 or 400 or 500": (r) => [200, 400, 500].includes(r.status),
     "response has message": (r) => {
       try {
@@ -109,9 +123,9 @@ function testFileUpload(fileName: string, hash: string, base64Content: string): 
   }
 
   // Log response for debugging (using simple logging in k6)
-  if (response.status === 200) {
+  if (uploadResponse.status === 200) {
     // Success - file uploaded and processed
-  } else if (response.status === 400) {
+  } else if (uploadResponse.status === 400) {
     // Expected failure (infected files, hash mismatch, etc.)
   } else {
     // Unexpected error

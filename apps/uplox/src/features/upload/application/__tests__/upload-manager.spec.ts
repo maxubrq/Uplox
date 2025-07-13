@@ -109,13 +109,7 @@ describe('UploadManager', () => {
             }),
         } as any);
 
-        uploadManager = new UploadManager(
-            mockLogger,
-            mockFileTypeScanner,
-            mockAVScanner,
-            mockStorage,
-            mockMetrics
-        );
+        uploadManager = new UploadManager(mockLogger, mockFileTypeScanner, mockAVScanner, mockStorage, mockMetrics);
     });
 
     afterEach(() => {
@@ -155,24 +149,21 @@ describe('UploadManager', () => {
 
             await uploadManager.init();
 
-            expect(mockLogger.error).toHaveBeenCalledWith(
-                '[UploadManager] Error when initialize scanners',
-                { error }
-            );
+            expect(mockLogger.error).toHaveBeenCalledWith('[UploadManager] Error when initialize scanners', { error });
         });
 
         it('should not initialize scanners if already initialized', async () => {
             // First initialization
             mockFileTypeScanner.init.mockResolvedValue();
             mockAVScanner.init.mockResolvedValue();
-            
+
             await uploadManager.init();
             uploadManager['_scannersInitialized'] = true;
 
             // Second initialization should not call init again
             mockFileTypeScanner.init.mockClear();
             mockAVScanner.init.mockClear();
-            
+
             await uploadManager.init();
 
             expect(mockFileTypeScanner.init).not.toHaveBeenCalled();
@@ -186,7 +177,7 @@ describe('UploadManager', () => {
             mockFileTypeScanner.init.mockResolvedValue();
             mockAVScanner.init.mockResolvedValue();
             mockFile.stream.mockReturnValue({} as any);
-            
+
             mockFileTypeScanner.scanStream.mockResolvedValue({
                 mimeType: 'text/plain',
                 extension: 'txt',
@@ -220,10 +211,7 @@ describe('UploadManager', () => {
                 },
             });
 
-            expect(mockLogger.info).toHaveBeenCalledWith(
-                '[UploadManager] Uploading file',
-                { file: 'test-file.txt' }
-            );
+            expect(mockLogger.info).toHaveBeenCalledWith('[UploadManager] Uploading file', { file: 'test-file.txt' });
             expect(mockStorage.saveFile).toHaveBeenCalled();
             expect(mockMetrics.uploadTotal).toHaveBeenCalledWith('text/plain');
             expect(mockMetrics.uploadsByMime).toHaveBeenCalledWith('text/plain');
@@ -233,14 +221,12 @@ describe('UploadManager', () => {
             const sha256 = 'different-hash';
             vi.mocked(hashStream).mockResolvedValue('test-hash-256');
 
-            await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow(
-                UploadFileErrorHashMismatch
-            );
+            await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow(UploadFileErrorHashMismatch);
 
             expect(mockMetrics.sha256MismatchTotal).toHaveBeenCalledWith('POST');
             expect(mockLogger.info).toHaveBeenCalledWith(
                 '[UploadManager] File hash mismatch',
-                expect.objectContaining({ error: expect.any(UploadFileErrorHashMismatch) })
+                expect.objectContaining({ error: expect.any(UploadFileErrorHashMismatch) }),
             );
         });
 
@@ -253,13 +239,11 @@ describe('UploadManager', () => {
 
             mockAVScanner.scanStream.mockResolvedValue(infectedResult);
 
-            await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow(
-                UploadFileErrorInfectedFile
-            );
+            await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow(UploadFileErrorInfectedFile);
 
             expect(mockLogger.info).toHaveBeenCalledWith(
                 '[UploadManager] File is infected',
-                expect.objectContaining({ error: expect.any(UploadFileErrorInfectedFile) })
+                expect.objectContaining({ error: expect.any(UploadFileErrorInfectedFile) }),
             );
         });
 
@@ -270,10 +254,7 @@ describe('UploadManager', () => {
 
             await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow(error);
 
-            expect(mockLogger.error).toHaveBeenCalledWith(
-                '[UploadManager] Failed to upload file',
-                { error }
-            );
+            expect(mockLogger.error).toHaveBeenCalledWith('[UploadManager] Failed to upload file', { error });
         });
 
         it('should call init before processing', async () => {
@@ -297,7 +278,7 @@ describe('UploadManager', () => {
 
         it('should call all scanners in parallel', async () => {
             const sha256 = 'test-hash-256';
-            
+
             // Mock implementations that track call order
             let callOrder: string[] = [];
             vi.mocked(hashStream).mockImplementation(async () => {
@@ -354,11 +335,7 @@ describe('UploadManager', () => {
 
             await uploadManager.uploadFile(mockFile, sha256);
 
-            expect(mockMetrics.avScanDurationMillis).toHaveBeenCalledWith(
-                'ClamAV',
-                expect.any(Number),
-                'clean'
-            );
+            expect(mockMetrics.avScanDurationMillis).toHaveBeenCalledWith('ClamAV', expect.any(Number), 'clean');
         });
 
         it('should record metrics for infected file scan', async () => {
@@ -372,15 +349,8 @@ describe('UploadManager', () => {
 
             await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow();
 
-            expect(mockMetrics.avScanDurationMillis).toHaveBeenCalledWith(
-                'ClamAV',
-                expect.any(Number),
-                'infected'
-            );
-            expect(mockMetrics.avDetectionTotal).toHaveBeenCalledWith(
-                'ClamAV',
-                'Test.Virus.A,Test.Virus.B'
-            );
+            expect(mockMetrics.avScanDurationMillis).toHaveBeenCalledWith('ClamAV', expect.any(Number), 'infected');
+            expect(mockMetrics.avDetectionTotal).toHaveBeenCalledWith('ClamAV', 'Test.Virus.A,Test.Virus.B');
         });
 
         it('should record metrics for AV scan failure', async () => {
@@ -390,10 +360,7 @@ describe('UploadManager', () => {
 
             await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow();
 
-            expect(mockMetrics.avScanFailureTotal).toHaveBeenCalledWith(
-                'ClamAV',
-                'AV scan failed'
-            );
+            expect(mockMetrics.avScanFailureTotal).toHaveBeenCalledWith('ClamAV', 'AV scan failed');
         });
 
         it('should record metrics for AV scan failure with unknown error', async () => {
@@ -404,10 +371,7 @@ describe('UploadManager', () => {
 
             await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow();
 
-            expect(mockMetrics.avScanFailureTotal).toHaveBeenCalledWith(
-                'ClamAV',
-                'unknown'
-            );
+            expect(mockMetrics.avScanFailureTotal).toHaveBeenCalledWith('ClamAV', 'unknown');
         });
     });
 
@@ -435,7 +399,7 @@ describe('UploadManager', () => {
             expect(mockMetrics.storagePutLatencyMillis).toHaveBeenCalledWith(
                 expect.any(Number),
                 'test-bucket',
-                'success'
+                'success',
             );
         });
 
@@ -446,10 +410,7 @@ describe('UploadManager', () => {
 
             await expect(uploadManager.uploadFile(mockFile, sha256)).rejects.toThrow();
 
-            expect(mockMetrics.uploadErrorsTotal).toHaveBeenCalledWith(
-                'StoragePut',
-                'PUT'
-            );
+            expect(mockMetrics.uploadErrorsTotal).toHaveBeenCalledWith('StoragePut', 'PUT');
         });
     });
 
@@ -502,7 +463,7 @@ describe('UploadManager', () => {
                     name: 'test-file.txt',
                     size: 1024,
                 }),
-                'test-hash-256'
+                'test-hash-256',
             );
         });
     });
@@ -551,7 +512,7 @@ describe('UploadManager', () => {
                 expect.objectContaining({
                     mimeType: undefined,
                     extension: undefined,
-                })
+                }),
             );
         });
 
@@ -568,7 +529,7 @@ describe('UploadManager', () => {
             expect(mockMetrics.storagePutLatencyMillis).toHaveBeenCalledWith(
                 expect.any(Number),
                 'different-bucket',
-                'success'
+                'success',
             );
         });
     });

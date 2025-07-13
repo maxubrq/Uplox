@@ -41,7 +41,7 @@ describe('UploxAppLoggerImpl', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        
+
         mockLogger = {
             warn: vi.fn(),
             error: vi.fn(),
@@ -65,7 +65,7 @@ describe('UploxAppLoggerImpl', () => {
 
         mockCustomConsoleFormat.mockReturnValue(mockConsoleFormatResult);
         mockCustomFileFormat.mockReturnValue(mockFileFormatResult);
-        
+
         (format.combine as any).mockReturnValue(mockFormatCombine);
         (format.timestamp as any).mockReturnValue(mockFormatTimestamp);
     });
@@ -132,7 +132,7 @@ describe('UploxAppLoggerImpl', () => {
         it('should return correct useJson flag', () => {
             const logger1 = new UploxAppLoggerImpl('App1', false);
             const logger2 = new UploxAppLoggerImpl('App2', true);
-            
+
             expect(logger1.isUseJson).toBe(false);
             expect(logger2.isUseJson).toBe(true);
         });
@@ -140,7 +140,7 @@ describe('UploxAppLoggerImpl', () => {
         it('should return correct level', () => {
             const logger1 = new UploxAppLoggerImpl('App1', false, 'info');
             const logger2 = new UploxAppLoggerImpl('App2', false, 'debug');
-            
+
             expect(logger1.level).toBe('info');
             expect(logger2.level).toBe('debug');
         });
@@ -149,7 +149,7 @@ describe('UploxAppLoggerImpl', () => {
     describe('static getInstance', () => {
         it('should create instance with default parameters', () => {
             const logger = UploxAppLoggerImpl.getInstance('TestApp');
-            
+
             expect(logger).toBeInstanceOf(UploxAppLoggerImpl);
             expect(logger.appName).toBe('TestApp');
             expect(logger.isUseJson).toBe(false);
@@ -158,7 +158,7 @@ describe('UploxAppLoggerImpl', () => {
 
         it('should create instance with custom parameters', () => {
             const logger = UploxAppLoggerImpl.getInstance('CustomApp', true, 'debug');
-            
+
             expect(logger).toBeInstanceOf(UploxAppLoggerImpl);
             expect(logger.appName).toBe('CustomApp');
             expect(logger.isUseJson).toBe(true);
@@ -176,53 +176,53 @@ describe('UploxAppLoggerImpl', () => {
         it('should call winston warn method', () => {
             const message = 'Warning message';
             const args = ['arg1', 'arg2'];
-            
+
             logger.warn(message, ...args);
-            
+
             expect(mockLogger.warn).toHaveBeenCalledWith(message, ...args);
         });
 
         it('should call winston error method', () => {
             const message = 'Error message';
             const args = ['arg1', 'arg2'];
-            
+
             logger.error(message, ...args);
-            
+
             expect(mockLogger.error).toHaveBeenCalledWith(message, ...args);
         });
 
         it('should call winston debug method', () => {
             const message = 'Debug message';
             const args = ['arg1', 'arg2'];
-            
+
             logger.debug(message, ...args);
-            
+
             expect(mockLogger.debug).toHaveBeenCalledWith(message, ...args);
         });
 
         it('should call winston info method', () => {
             const message = 'Info message';
             const args = ['arg1', 'arg2'];
-            
+
             logger.info(message, ...args);
-            
+
             expect(mockLogger.info).toHaveBeenCalledWith(message, ...args);
         });
 
         it('should handle logging without additional arguments', () => {
             const message = 'Simple message';
-            
+
             logger.info(message);
-            
+
             expect(mockLogger.info).toHaveBeenCalledWith(message);
         });
 
         it('should handle logging with complex arguments', () => {
             const message = 'Complex message';
             const args = [{ key: 'value' }, [1, 2, 3], null, undefined];
-            
+
             logger.info(message, ...args);
-            
+
             expect(mockLogger.info).toHaveBeenCalledWith(message, ...args);
         });
     });
@@ -231,7 +231,7 @@ describe('UploxAppLoggerImpl', () => {
         it('should create child logger with new name', () => {
             const parentLogger = new UploxAppLoggerImpl('ParentApp');
             const childLogger = parentLogger.child('ChildApp');
-            
+
             expect(childLogger).toBeInstanceOf(UploxAppLoggerImpl);
             expect(childLogger.appName).toBe('ChildApp');
             expect(childLogger).not.toBe(parentLogger);
@@ -240,7 +240,7 @@ describe('UploxAppLoggerImpl', () => {
         it('should create child logger with default settings', () => {
             const parentLogger = new UploxAppLoggerImpl('ParentApp', true, 'debug');
             const childLogger = parentLogger.child('ChildApp');
-            
+
             // Child logger should be created with default settings, not parent settings
             expect(childLogger.appName).toBe('ChildApp');
             expect(childLogger.isUseJson).toBe(false);
@@ -251,28 +251,28 @@ describe('UploxAppLoggerImpl', () => {
     describe('integration with winston configuration', () => {
         it('should configure winston logger correctly for JSON format', () => {
             new UploxAppLoggerImpl('JSONApp', true, 'error');
-            
+
             expect(mockCustomConsoleFormat).toHaveBeenCalledWith('JSONApp', true);
             expect(mockCustomFileFormat).toHaveBeenCalledWith('JSONApp', true);
         });
 
         it('should configure winston logger correctly for non-JSON format', () => {
             new UploxAppLoggerImpl('PlainApp', false, 'warn');
-            
+
             expect(mockCustomConsoleFormat).toHaveBeenCalledWith('PlainApp', false);
             expect(mockCustomFileFormat).toHaveBeenCalledWith('PlainApp', false);
         });
 
         it('should create exactly 3 transports', () => {
             new UploxAppLoggerImpl('TestApp');
-            
+
             expect(mockConsoleTransport).toHaveBeenCalledTimes(1);
             expect(mockFileTransport).toHaveBeenCalledTimes(2);
         });
 
         it('should call format.combine and format.timestamp correctly', () => {
             new UploxAppLoggerImpl('TestApp');
-            
+
             expect(format.combine).toHaveBeenCalledTimes(4); // 1 for logger + 3 for transports
             expect(format.timestamp).toHaveBeenCalledTimes(4);
         });

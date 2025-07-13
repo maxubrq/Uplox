@@ -23,7 +23,7 @@ describe('ClamAVScanner', () => {
     beforeEach(() => {
         // Reset all mocks
         vi.clearAllMocks();
-        
+
         // Reset singleton instance and static properties
         (ClamAVScanner as any)._instance = null;
         (ClamAVScanner as any)._version = undefined;
@@ -52,7 +52,7 @@ describe('ClamAVScanner', () => {
         it('should return singleton instance', () => {
             const instance1 = ClamAVScanner.getInstance(mockLogger);
             const instance2 = ClamAVScanner.getInstance(mockLogger);
-            
+
             expect(instance1).toBe(instance2);
             expect(instance1).toBeInstanceOf(ClamAVScanner);
         });
@@ -60,7 +60,7 @@ describe('ClamAVScanner', () => {
         it('should create new instance only once', () => {
             ClamAVScanner.getInstance(mockLogger);
             ClamAVScanner.getInstance(mockLogger);
-            
+
             expect(NodeClam).toHaveBeenCalledTimes(0); // Constructor not called until init
         });
     });
@@ -115,12 +115,14 @@ describe('ClamAVScanner', () => {
 
         it('should scan file successfully when not infected', async () => {
             const mockFile = {
-                stream: vi.fn().mockReturnValue(new ReadableStream({
-                    start(controller) {
-                        controller.enqueue(new Uint8Array([1, 2, 3]));
-                        controller.close();
-                    }
-                })),
+                stream: vi.fn().mockReturnValue(
+                    new ReadableStream({
+                        start(controller) {
+                            controller.enqueue(new Uint8Array([1, 2, 3]));
+                            controller.close();
+                        },
+                    }),
+                ),
             } as unknown as File;
 
             const mockResult = {
@@ -143,19 +145,19 @@ describe('ClamAVScanner', () => {
                 timeout: false,
                 version: 'ClamAV 1.0.0',
             });
-            expect(mockClamav.scanStream).toHaveBeenCalledWith(
-                expect.any(Readable)
-            );
+            expect(mockClamav.scanStream).toHaveBeenCalledWith(expect.any(Readable));
         });
 
         it('should scan file successfully when infected', async () => {
             const mockFile = {
-                stream: vi.fn().mockReturnValue(new ReadableStream({
-                    start(controller) {
-                        controller.enqueue(new Uint8Array([1, 2, 3]));
-                        controller.close();
-                    }
-                })),
+                stream: vi.fn().mockReturnValue(
+                    new ReadableStream({
+                        start(controller) {
+                            controller.enqueue(new Uint8Array([1, 2, 3]));
+                            controller.close();
+                        },
+                    }),
+                ),
             } as unknown as File;
 
             const mockResult = {
@@ -182,12 +184,14 @@ describe('ClamAVScanner', () => {
 
         it('should handle missing optional fields in scan result', async () => {
             const mockFile = {
-                stream: vi.fn().mockReturnValue(new ReadableStream({
-                    start(controller) {
-                        controller.enqueue(new Uint8Array([1, 2, 3]));
-                        controller.close();
-                    }
-                })),
+                stream: vi.fn().mockReturnValue(
+                    new ReadableStream({
+                        start(controller) {
+                            controller.enqueue(new Uint8Array([1, 2, 3]));
+                            controller.close();
+                        },
+                    }),
+                ),
             } as unknown as File;
 
             const mockResult = {
@@ -212,29 +216,33 @@ describe('ClamAVScanner', () => {
 
         it('should throw error when ClamAV not initialized', async () => {
             const mockFile = {
-                stream: vi.fn().mockReturnValue(new ReadableStream({
-                    start(controller) {
-                        controller.enqueue(new Uint8Array([1, 2, 3]));
-                        controller.close();
-                    }
-                })),
+                stream: vi.fn().mockReturnValue(
+                    new ReadableStream({
+                        start(controller) {
+                            controller.enqueue(new Uint8Array([1, 2, 3]));
+                            controller.close();
+                        },
+                    }),
+                ),
             } as unknown as File;
 
             // Reset singleton and create new instance without initializing
             (ClamAVScanner as any)._instance = null;
             const uninitializedScanner = ClamAVScanner.getInstance(mockLogger);
-            
+
             await expect(uninitializedScanner.scanFile(mockFile)).rejects.toThrow('ClamAV not initialized');
         });
 
         it('should handle scan errors', async () => {
             const mockFile = {
-                stream: vi.fn().mockReturnValue(new ReadableStream({
-                    start(controller) {
-                        controller.enqueue(new Uint8Array([1, 2, 3]));
-                        controller.close();
-                    }
-                })),
+                stream: vi.fn().mockReturnValue(
+                    new ReadableStream({
+                        start(controller) {
+                            controller.enqueue(new Uint8Array([1, 2, 3]));
+                            controller.close();
+                        },
+                    }),
+                ),
             } as unknown as File;
 
             const error = new Error('Scan failed');
@@ -279,7 +287,7 @@ describe('ClamAVScanner', () => {
             // Reset singleton and create new instance without initializing
             (ClamAVScanner as any)._instance = null;
             const uninitializedScanner = ClamAVScanner.getInstance(mockLogger);
-            
+
             await expect(uninitializedScanner.scanStream(mockStream)).rejects.toThrow('ClamAV not initialized');
         });
 
@@ -320,7 +328,7 @@ describe('ClamAVScanner', () => {
             // Reset singleton and create new instance without initializing
             (ClamAVScanner as any)._instance = null;
             const uninitializedScanner = ClamAVScanner.getInstance(mockLogger);
-            
+
             await expect(uninitializedScanner.version()).rejects.toThrow('ClamAV not initialized');
         });
 
@@ -339,12 +347,14 @@ describe('ClamAVScanner', () => {
             await scanner.init();
 
             const mockFile = {
-                stream: vi.fn().mockReturnValue(new ReadableStream({
-                    start(controller) {
-                        controller.enqueue(new Uint8Array([1, 2, 3]));
-                        controller.close();
-                    }
-                })),
+                stream: vi.fn().mockReturnValue(
+                    new ReadableStream({
+                        start(controller) {
+                            controller.enqueue(new Uint8Array([1, 2, 3]));
+                            controller.close();
+                        },
+                    }),
+                ),
             } as unknown as File;
 
             await expect(scanner.scanFile(mockFile)).rejects.toThrow('ClamAV not initialized');
@@ -352,17 +362,19 @@ describe('ClamAVScanner', () => {
 
         it('should handle initialization state reset', async () => {
             await scanner.init();
-            
+
             // Manually reset the initialized state to test error handling
             (scanner as any)._initialized = false;
 
             const mockFile = {
-                stream: vi.fn().mockReturnValue(new ReadableStream({
-                    start(controller) {
-                        controller.enqueue(new Uint8Array([1, 2, 3]));
-                        controller.close();
-                    }
-                })),
+                stream: vi.fn().mockReturnValue(
+                    new ReadableStream({
+                        start(controller) {
+                            controller.enqueue(new Uint8Array([1, 2, 3]));
+                            controller.close();
+                        },
+                    }),
+                ),
             } as unknown as File;
 
             await expect(scanner.scanFile(mockFile)).rejects.toThrow('ClamAV not initialized');

@@ -86,6 +86,16 @@ export class UploadManager {
         return result;
     }
 
+    async recordMetrics(mimeType: string) {
+        try {
+            await Promise.all([this._metrics.uploadTotal(mimeType), this._metrics.uploadsByMime(mimeType)]);
+        } catch (err) {
+            this._logger.warn(`[${this.constructor.name}] Error recording metrics for mime type ${mimeType}`, {
+                error: err,
+            });
+        }
+    }
+
     async uploadFile(file: File, sha256: string): Promise<UploadFileResult> {
         try {
             this._logger.info(`[${this.constructor.name}] Uploading file`, {
@@ -145,10 +155,7 @@ export class UploadManager {
                 this._storage.getBucket(),
             );
 
-            await Promise.all([
-                this._metrics.uploadTotal(fileType.mimeType),
-                this._metrics.uploadsByMime(fileType.mimeType),
-            ]);
+            await this.recordMetrics(fileType.mimeType);
 
             return {
                 fileId: uploxF.id,

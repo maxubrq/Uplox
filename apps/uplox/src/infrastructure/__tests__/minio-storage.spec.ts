@@ -202,11 +202,7 @@ describe('MinioStorage', () => {
             expect(mockUploxFile.toJSON).toHaveBeenCalledTimes(1);
 
             expect(mockMinioClient.putObject).toHaveBeenCalledTimes(2);
-            expect(mockMinioClient.putObject).toHaveBeenCalledWith(
-                mockBucket,
-                fileId,
-                mockReadableStream,
-            );
+            expect(mockMinioClient.putObject).toHaveBeenCalledWith(mockBucket, fileId, mockReadableStream);
             expect(mockMinioClient.putObject).toHaveBeenCalledWith(
                 mockBucket,
                 expectedMetadataId,
@@ -230,9 +226,7 @@ describe('MinioStorage', () => {
 
             mockMinioClient.putObject.mockRejectedValue(uploadError);
 
-            await expect(minioStorage.saveFile(mockFile, mockUploxFile, fileId)).rejects.toThrow(
-                'Upload failed',
-            );
+            await expect(minioStorage.saveFile(mockFile, mockUploxFile, fileId)).rejects.toThrow('Upload failed');
 
             expect(mockLogger.info).toHaveBeenCalledWith('[MinioStorage] Start upload file');
             expect(mockLogger.info).not.toHaveBeenCalledWith(
@@ -260,22 +254,14 @@ describe('MinioStorage', () => {
             await minioStorage.saveFile(mockFile, mockUploxFile, fileId1);
             await minioStorage.saveFile(mockFile, mockUploxFile, fileId2);
 
-            expect(mockMinioClient.putObject).toHaveBeenCalledWith(
-                mockBucket,
-                fileId1,
-                expect.any(Readable),
-            );
+            expect(mockMinioClient.putObject).toHaveBeenCalledWith(mockBucket, fileId1, expect.any(Readable));
             expect(mockMinioClient.putObject).toHaveBeenCalledWith(
                 mockBucket,
                 `${fileId1}.meta.json`,
                 expect.any(String),
             );
 
-            expect(mockMinioClient.putObject).toHaveBeenCalledWith(
-                mockBucket,
-                fileId2,
-                expect.any(Readable),
-            );
+            expect(mockMinioClient.putObject).toHaveBeenCalledWith(mockBucket, fileId2, expect.any(Readable));
             expect(mockMinioClient.putObject).toHaveBeenCalledWith(
                 mockBucket,
                 `${fileId2}.meta.json`,
@@ -285,17 +271,14 @@ describe('MinioStorage', () => {
 
         it('should use Promise.all for concurrent uploads', async () => {
             const fileId = 'concurrent-test';
-            
+
             // Mock Promise.all to track concurrent execution
             const originalPromiseAll = Promise.all;
             const promiseAllSpy = vi.spyOn(Promise, 'all').mockImplementation(originalPromiseAll);
 
             await minioStorage.saveFile(mockFile, mockUploxFile, fileId);
 
-            expect(promiseAllSpy).toHaveBeenCalledWith([
-                expect.any(Promise),
-                expect.any(Promise),
-            ]);
+            expect(promiseAllSpy).toHaveBeenCalledWith([expect.any(Promise), expect.any(Promise)]);
 
             promiseAllSpy.mockRestore();
         });
@@ -319,11 +302,7 @@ describe('MinioStorage', () => {
             expect(mockUploxFile.toJSON).toHaveBeenCalledTimes(1);
 
             expect(mockMinioClient.putObject).toHaveBeenCalledTimes(2);
-            expect(mockMinioClient.putObject).toHaveBeenCalledWith(
-                mockBucket,
-                fileId,
-                mockStream,
-            );
+            expect(mockMinioClient.putObject).toHaveBeenCalledWith(mockBucket, fileId, mockStream);
             expect(mockMinioClient.putObject).toHaveBeenCalledWith(
                 mockBucket,
                 expectedMetadataId,
@@ -346,9 +325,9 @@ describe('MinioStorage', () => {
 
             mockMinioClient.putObject.mockRejectedValue(streamError);
 
-            await expect(
-                minioStorage.saveFileStream(mockStream, mockUploxFile, fileId),
-            ).rejects.toThrow('Stream upload failed');
+            await expect(minioStorage.saveFileStream(mockStream, mockUploxFile, fileId)).rejects.toThrow(
+                'Stream upload failed',
+            );
 
             expect(mockLogger.info).toHaveBeenCalledWith('[MinioStorage] Uploading files', {
                 fileId,
@@ -371,26 +350,19 @@ describe('MinioStorage', () => {
 
             await minioStorage.saveFileStream(customStream, mockUploxFile, fileId);
 
-            expect(mockMinioClient.putObject).toHaveBeenCalledWith(
-                mockBucket,
-                fileId,
-                customStream,
-            );
+            expect(mockMinioClient.putObject).toHaveBeenCalledWith(mockBucket, fileId, customStream);
         });
 
         it('should use Promise.all for concurrent uploads', async () => {
             const fileId = 'concurrent-stream-test';
-            
+
             // Mock Promise.all to track concurrent execution
             const originalPromiseAll = Promise.all;
             const promiseAllSpy = vi.spyOn(Promise, 'all').mockImplementation(originalPromiseAll);
 
             await minioStorage.saveFileStream(mockStream, mockUploxFile, fileId);
 
-            expect(promiseAllSpy).toHaveBeenCalledWith([
-                expect.any(Promise),
-                expect.any(Promise),
-            ]);
+            expect(promiseAllSpy).toHaveBeenCalledWith([expect.any(Promise), expect.any(Promise)]);
 
             promiseAllSpy.mockRestore();
         });
@@ -536,7 +508,7 @@ describe('MinioStorage', () => {
             } as any;
 
             vi.spyOn(Readable, 'fromWeb').mockReturnValue(new Readable());
-            
+
             // Mock first putObject call to succeed, second to fail
             mockMinioClient.putObject
                 .mockResolvedValueOnce(undefined)
@@ -553,7 +525,7 @@ describe('MinioStorage', () => {
 
         it('should handle partial upload failures in saveFileStream', async () => {
             const mockStream = new Readable();
-            
+
             // Mock first putObject call to succeed, second to fail
             mockMinioClient.putObject
                 .mockResolvedValueOnce(undefined)
@@ -561,9 +533,9 @@ describe('MinioStorage', () => {
 
             const fileId = 'stream-partial-fail-test';
 
-            await expect(
-                minioStorage.saveFileStream(mockStream, mockUploxFile, fileId),
-            ).rejects.toThrow('Metadata upload failed');
+            await expect(minioStorage.saveFileStream(mockStream, mockUploxFile, fileId)).rejects.toThrow(
+                'Metadata upload failed',
+            );
 
             expect(mockMinioClient.putObject).toHaveBeenCalledTimes(2);
         });

@@ -125,7 +125,7 @@ services:
       - ./k6/results:/shared  # Mount for test results
     environment:
       - K6_VUS=${K6_VUS:-100}  # Default 100 VUs
-      - K6_DURATION=${K6_DURATION:-10m}  # Default 10 minutes
+      - K6_DURATION=${K6_DURATION:-15m}  # Default 10 minutes
       - K6_TARGET_URL=${K6_TARGET_URL:-http://uplox:3000}  # Target URL
       - K6_DISTRIBUTED_MODE=${K6_DISTRIBUTED_MODE:-false}  # Distributed mode
     working_dir: /k6
