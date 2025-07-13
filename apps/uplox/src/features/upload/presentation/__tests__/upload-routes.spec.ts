@@ -13,7 +13,7 @@ const mockUploadManager = {
     uploadFile: vi.fn(),
 };
 
-const mockMetrics = {};
+
 
 // Mock genId
 vi.mock('../../../../shared', () => ({
@@ -29,7 +29,7 @@ describe('UploadRoutes', () => {
         vi.clearAllMocks();
         
         // Create instance
-        uploadRoutes = new UploadRoutes(mockLogger as any, mockUploadManager as any, mockMetrics as any);
+        uploadRoutes = new UploadRoutes(mockLogger as any, mockUploadManager as any);
 
         // Mock context
         mockContext = {

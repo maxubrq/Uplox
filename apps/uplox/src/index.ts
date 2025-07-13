@@ -62,7 +62,7 @@ function bootstrap() {
     const fileTypeScanner = FileTypeScanner.getInstance(logger);
     const clamscan = ClamAVScanner.getInstance(logger);
     const uploadManager = new UploadManager(logger, fileTypeScanner, clamscan, storage, appMetrics);
-    const uploadRoutes = new UploadRoutes(logger, uploadManager, appMetrics);
+    const uploadRoutes = new UploadRoutes(logger, uploadManager);
     uploadRoutes.attachRoutes(app);
 
     // 4. Inject metrics routes
