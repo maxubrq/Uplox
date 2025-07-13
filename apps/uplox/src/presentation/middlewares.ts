@@ -19,6 +19,9 @@ export function metricsFailedCounterMiddleware(metrics: AppMetrics) {
             statusCode = c.res.status;
         } catch (err) {
             statusCode = c.res.status;
+            if (statusCode && statusCode >= 400) {
+                metrics.apiErrorsTotal(method, route, statusCode?.toString());
+            }
             throw err;
         }
         if (statusCode && statusCode >= 400) {
