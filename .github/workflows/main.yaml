@@ -358,28 +358,62 @@ jobs:
         if git diff --quiet README.md; then
           echo "No changes to commit for security badge"
         else
-          # Pull latest changes to avoid conflicts
-          for i in {1..3}; do
-            if git pull origin main --rebase; then
-              break
-            else
-              echo "Pull failed, retrying in 5 seconds... (attempt $i/3)"
-              sleep 5
+          # Robust update with conflict resolution
+          for attempt in {1..5}; do
+            echo "Attempt $attempt to update security badge"
+            
+            # Fetch latest changes
+            git fetch origin main
+            
+            # Reset to latest origin/main to avoid conflicts
+            git reset --hard origin/main
+            
+            # Re-apply the security badge update to the fresh README
+            if [ -f README.md ]; then
+              # Remove existing security badge if it exists
+              sed -i '/!\[Security\]/d' README.md
+              
+              # Add new security badge after existing badges
+              if grep -q "!\[Coverage\]" README.md; then
+                # Add after the coverage badge line
+                sed -i "/!\[Coverage\]/a${{ env.SECURITY_BADGE }}" README.md
+              elif grep -q "!\[Tests\]" README.md; then
+                # Add after the tests badge line  
+                sed -i "/!\[Tests\]/a${{ env.SECURITY_BADGE }}" README.md
+              elif grep -q "^# " README.md; then
+                # Add after the title if no other badges exist
+                sed -i "/^# /a${{ env.SECURITY_BADGE }}" README.md
+              else
+                # Add at the top if no title exists
+                echo -e "${{ env.SECURITY_BADGE }}\n$(cat README.md)" > README.md
+              fi
+              
+              echo "Updated README.md with security badge: ${{ env.SECURITY_BADGE }}"
             fi
-          done
-          
-          git add README.md
-          git commit -m "Update security badge [skip ci]"
-          
-          # Push with retry logic
-          for i in {1..3}; do
-            if git push; then
-              echo "Successfully pushed security badge updates"
+            
+            # Check if there are actually changes after re-applying
+            if git diff --quiet README.md; then
+              echo "No changes after re-applying security badge"
+              break
+            fi
+            
+            # Add and commit the changes
+            git add README.md
+            git commit -m "Update security badge [skip ci]"
+            
+            # Try to push
+            if git push origin main; then
+              echo "Successfully pushed security badge updates on attempt $attempt"
               break
             else
-              echo "Push failed, retrying in 5 seconds... (attempt $i/3)"
-              sleep 5
-              git pull origin main --rebase
+              echo "Push failed on attempt $attempt, retrying..."
+              sleep $((attempt * 2))
+            fi
+            
+            # If this is the last attempt, fail gracefully
+            if [ $attempt -eq 5 ]; then
+              echo "Failed to push security badge updates after 5 attempts"
+              echo "This is likely due to concurrent updates - security badge will be updated in next run"
             fi
           done
         fi
