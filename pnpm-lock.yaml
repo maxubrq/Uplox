@@ -30,7 +30,7 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.15.0
-        version: 1.16.0(hono@4.8.4)
+        version: 1.16.0(hono@4.8.5)
       '@uplox/prettier-config':
         specifier: workspace:*
         version: link:../../packages/prettier-config
@@ -42,7 +42,7 @@ importers:
         version: 21.0.0
       hono:
         specifier: ^4.8.4
-        version: 4.8.4
+        version: 4.8.5
       inversify:
         specifier: 7.5.4
         version: 7.5.4(reflect-metadata@0.2.2)
@@ -789,8 +789,8 @@ packages:
     resolution: {integrity: sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==}
     engines: {node: '>= 0.4'}
 
-  hono@4.8.4:
-    resolution: {integrity: sha512-KOIBp1+iUs0HrKztM4EHiB2UtzZDTBihDtOF5K6+WaJjCPeaW4Q92R8j63jOhvJI5+tZSMuKD9REVEXXY9illg==}
+  hono@4.8.5:
+    resolution: {integrity: sha512-Up2cQbtNz1s111qpnnECdTGqSIUIhZJMLikdKkshebQSEBcoUKq6XJayLGqSZWidiH0zfHRCJqFu062Mz5UuRA==}
     engines: {node: '>=16.9.0'}
 
   html-escaper@2.0.2:
@@ -1421,9 +1421,9 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
-  '@hono/node-server@1.16.0(hono@4.8.4)':
+  '@hono/node-server@1.16.0(hono@4.8.5)':
     dependencies:
-      hono: 4.8.4
+      hono: 4.8.5
 
   '@inversifyjs/common@1.5.2': {}
 
@@ -1928,7 +1928,7 @@ snapshots:
     dependencies:
       function-bind: 1.1.2
 
-  hono@4.8.4: {}
+  hono@4.8.5: {}
 
   html-escaper@2.0.2: {}
 
