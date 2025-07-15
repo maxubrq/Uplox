@@ -11,20 +11,10 @@ Born under the SEM mantra **Safe → Scale → Performance Excellent** (Levels 1
 
 ---
 
-## ✨ Key Features
-
-| Pillar    | What You Get                                                                                                                  |
-|-----------|-------------------------------------------------------------------------------------------------------------------------------|
-| **Safe**  | • End-to-end TLS, HSTS, CSP<br>• Virus scan before object finalises<br>• OWASP headers & rate-limit                           |
-| **Scale** | • Streaming uploader → any S3 / MinIO<br>• Stateless; ready for horizontal scaling<br>• Prometheus metrics + JSON logs (winston) |
-| **Perf**  | • Presign API < 50 ms P95<br>• Upload path zero-copy, constant memory<br>• Benchmark 1 000 RPS @ 150 ms on 512 MiB tier       |
-
----
-
 ## 🏃 Quick Start (Local dev ≤ 2 min)
 
 ```bash
-git clone https://github.com/your-org/uplox
+git clone https://github.com/maxubrq/uplox
 cd uplox
 docker compose up -d   # boots app + minio + clamav + redis
 pnpm run dev           # hot-reload development
@@ -85,32 +75,6 @@ CI template already:
 - Vitest + comprehensive mocking (≥ 60 % L1, 80 % L2)
 - Builds slim (≤ 150 MB) image & Trivy scan
 - Publishes SBOM to GitHub-Dependabot
-
----
-
-## 📊 Benchmarks & SEM Levels
-
-| Metric             | Level 1 Target         | Level 2 Target           |
-|--------------------|------------------------|--------------------------|
-| Throughput (`PUT`) | 300 RPS · P95 < 250 ms | 1 000 RPS · P95 < 150 ms |
-| Test coverage      | ≥ 60 % lines           | ≥ 80 % lines + branches  |
-| Container size     | ≤ 300 MB               | ≤ 150 MB                 |
-| Static vulns       | 0 critical             | 0 critical + 0 high      |
-| Startup            | ≤ 2 s                  | ≤ 1 s                    |
-
-Full scripts live in `bench/` (k6).
-
----
-
-## 🌱 Roadmap
-
-| Ver       | Milestone                                      | SEM Level    |
-|-----------|------------------------------------------------|--------------|
-| **0.1.0** | File + ClamAV + Docker + CI                    | L1 pass      |
-| **0.2.0** | Metrics, rate-limit, 1 k RPS load test         | L2 pass      |
-| **0.3.0** | One-time links + Clean-Room download (Magic 1) | Bridge to L3 |
-
----
 
 ## 🤝 Contributing
 
