@@ -5,7 +5,6 @@
 > **Upload once. Trust always.**
 
 **Uplox** is a lightweight NodeJS + TypeScript micro-service that lets any application accept files _safely_ and _at scale_.
-Born under the SEM mantra **Safe → Scale → Performance Excellent** (Levels 1-2), it ships with guard-rails on day-one yet grows effortlessly.
 
 ![logo](https://dummyimage.com/600x140/000/fff&text=Uplox)<!-- placeholder -->
 
