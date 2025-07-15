@@ -1,6 +1,3 @@
-## Magic Kano Model – **Uplox (Secure Upload Service)**
----
-
 # Uplox · Secure Upload API in TypeScript 🚀
 ![Coverage](https://img.shields.io/badge/coverage-92.88%25-brightgreen) ![Tests](https://img.shields.io/badge/tests-passed-brightgreen)
 ![Security](https://img.shields.io/badge/security-2%20medium-yellow)
