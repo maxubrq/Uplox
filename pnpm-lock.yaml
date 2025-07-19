@@ -30,7 +30,7 @@ importers:
     dependencies:
       '@hono/node-server':
         specifier: ^1.15.0
-        version: 1.16.0(hono@4.8.4)
+        version: 1.17.0(hono@4.8.4)
       '@uplox/prettier-config':
         specifier: workspace:*
         version: link:../../packages/prettier-config
@@ -273,8 +273,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@hono/node-server@1.16.0':
-    resolution: {integrity: sha512-9LwRb5XOrTFapOABiQjGC50wRVlzUvWZsDHINCnkBniP+Q+LQf4waN0nzk9t+2kqcTsnGnieSmqpHsr6kH2bdw==}
+  '@hono/node-server@1.17.0':
+    resolution: {integrity: sha512-u30lnh86PYua8X1NqsV4O7aeziJq7mN0pDXUvGxIeLWVI+n/xzuSxMb1YZlQ/73LTf6Wxgp5cyhw7r5JSrCgcg==}
     engines: {node: '>=18.14.1'}
     peerDependencies:
       hono: ^4
@@ -1421,7 +1421,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.5':
     optional: true
 
-  '@hono/node-server@1.16.0(hono@4.8.4)':
+  '@hono/node-server@1.17.0(hono@4.8.4)':
     dependencies:
       hono: 4.8.4
 
